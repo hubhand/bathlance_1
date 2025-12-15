@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Product, ProductCategory } from '../types';
+import { Product, ProductCategory, GeminiIngredientsResponse } from '../types';
 import { formatDate, calculateExpiryDate } from '../utils/dateUtils';
 import { AVERAGE_USAGE_PERIODS } from '../constants';
-import { analyzeIngredients } from '../services/geminiService';
 
 interface EditProductScreenProps {
   product: Product;
@@ -52,12 +51,30 @@ export const EditProductScreen: React.FC<EditProductScreenProps> = ({ product, o
     }
     
     if (name === 'periodAfterOpening' || name === 'expiryPeriodBeforeOpening' || name === 'stock') {
-      let numValue = parseInt(value, 10);
+      // stock의 경우 숫자 입력 처리
       if (name === 'stock') {
-          if (numValue > 50) numValue = 50;
-          if (numValue < 0) numValue = 0;
+        // type="number" input은 빈 문자열이거나 숫자 문자열만 반환
+        if (value === '' || value === null || value === undefined) {
+          setFormData(prev => ({ ...prev, stock: undefined }));
+          return;
+        }
+        const numValue = Number(value);
+        if (!isNaN(numValue) && isFinite(numValue)) {
+          const finalValue = Math.max(0, Math.min(50, Math.floor(numValue)));
+          setFormData(prev => ({ ...prev, stock: finalValue }));
+        }
+      } else {
+        // 다른 숫자 필드는 기존 로직 유지
+        if (value === '') {
+          setFormData(prev => ({ ...prev, [name]: undefined }));
+          return;
+        }
+        let numValue = parseInt(value, 10);
+        if (isNaN(numValue)) {
+          return;
+        }
+        setFormData(prev => ({ ...prev, [name]: numValue }));
       }
-      setFormData(prev => ({ ...prev, [name]: isNaN(numValue) ? undefined : numValue }));
     } else {
        // When changing a date, the value will be like "2024-10-23".
        // To maintain consistency, we convert it to an ISO string at midnight UTC.
@@ -82,15 +99,52 @@ export const EditProductScreen: React.FC<EditProductScreenProps> = ({ product, o
     setIsAnalyzing(true);
     setAnalysisError(null);
     try {
-      const base64Image = formData.imageUrl.split(',')[1];
-      if (!base64Image) {
+      // Data URL 형식인지 확인하고 base64 부분만 추출
+      let base64Image: string;
+      if (formData.imageUrl.startsWith('data:')) {
+        // Data URL 형식: data:image/jpeg;base64,xxxxx
+        base64Image = formData.imageUrl.split(',')[1];
+      } else {
+        // 이미 base64 문자열인 경우
+        base64Image = formData.imageUrl;
+      }
+      
+      if (!base64Image || base64Image.trim() === '') {
         throw new Error('이미지 데이터가 올바르지 않아요.');
       }
-      const result = await analyzeIngredients(base64Image);
+      
+      // API Route를 통해 서버 사이드에서 Gemini API 호출
+      const response = await fetch('/api/gemini/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imageBase64: base64Image, type: 'ingredients' }),
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: '알 수 없는 오류가 발생했습니다.' }));
+        const errorMessage = errorData.error || '성분 분석에 실패했어요.';
+        
+        // 503 에러 (서버 과부하)인 경우 특별 처리
+        if (response.status === 503) {
+          throw new Error('Gemini API 서버가 일시적으로 과부하 상태입니다. 잠시 후 다시 시도해주세요.');
+        }
+        
+        throw new Error(errorMessage);
+      }
+      
+      const result = await response.json() as GeminiIngredientsResponse;
       setFormData(prev => ({ ...prev, ingredientAnalysis: result.ingredients }));
     } catch (error: any) {
-      console.error(error);
-      setAnalysisError(error.message || '성분 분석에 실패했어요. 이미지에 전성분표가 잘 보이는지 확인 후 다시 시도해주세요.');
+      console.error('성분 분석 에러:', error);
+      
+      // 에러 메시지 처리
+      let errorMessage = '성분 분석에 실패했어요. 이미지에 전성분표가 잘 보이는지 확인 후 다시 시도해주세요.';
+      
+      if (error?.message) {
+        errorMessage = error.message;
+      }
+      
+      setAnalysisError(errorMessage);
     } finally {
       setIsAnalyzing(false);
     }
@@ -110,9 +164,31 @@ export const EditProductScreen: React.FC<EditProductScreenProps> = ({ product, o
       return 'bg-gray-100 text-gray-800 border border-gray-200';
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onUpdateProduct(formData);
+    
+    // 저장 전에 stock이 undefined이거나 null이면 기본값 1로 설정 (0은 유지)
+    const stockValue = formData.stock !== undefined && formData.stock !== null ? formData.stock : 1;
+    const finalStock = Math.max(0, Math.min(50, stockValue));
+    
+    const productToSave: Product = {
+      ...formData,
+      stock: finalStock,
+    };
+    
+    console.log('재고 수량 수정 시도:', { 
+      원본값: formData.stock, 
+      최종값: finalStock,
+      전체데이터: productToSave 
+    });
+    
+    try {
+      await onUpdateProduct(productToSave);
+      console.log('재고 수량 수정 성공');
+    } catch (error) {
+      console.error('재고 수량 수정 실패:', error);
+      alert('재고 수량 수정에 실패했어요. 콘솔을 확인해주세요.');
+    }
   };
 
   return (
@@ -186,7 +262,7 @@ export const EditProductScreen: React.FC<EditProductScreenProps> = ({ product, o
             type="number"
             id="stock"
             name="stock"
-            value={formData.stock ?? 1}
+            value={formData.stock !== undefined && formData.stock !== null ? String(formData.stock) : ''}
             onChange={handleChange}
             min="0"
             max="50"

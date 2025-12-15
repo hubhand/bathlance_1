@@ -49,3 +49,15 @@ export interface DiaryEntry {
   content: string;
   date: string; // ISO String
 }
+
+export interface TroubleHistory {
+  id: string;
+  userId: string;
+  productName: string;
+  category: ProductCategory;
+  ingredientAnalysis?: Ingredient[];
+  review?: string;
+  productId?: string; // 원본 제품 ID (제품 삭제 시 null)
+  createdAt: string; // ISO String
+  updatedAt: string; // ISO String
+}

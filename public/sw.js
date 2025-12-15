@@ -35,6 +35,14 @@ self.addEventListener('activate', (event) => {
 
 // 네트워크 요청 가로채기
 self.addEventListener('fetch', (event) => {
+  // Chrome 확장 프로그램 요청은 캐시하지 않음
+  if (event.request.url.startsWith('chrome-extension://') ||
+      event.request.url.startsWith('chrome://') ||
+      event.request.url.startsWith('moz-extension://') ||
+      event.request.url.startsWith('safari-extension://')) {
+    return;
+  }
+
   // Clerk 인증 요청은 캐시하지 않음
   if (event.request.url.includes('clerk') || 
       event.request.url.includes('api') ||
@@ -54,6 +62,15 @@ self.addEventListener('fetch', (event) => {
           if (!response || response.status !== 200 || response.type !== 'basic') {
             return response;
           }
+          
+          // Chrome 확장 프로그램 응답은 캐시하지 않음
+          if (event.request.url.startsWith('chrome-extension://') ||
+              event.request.url.startsWith('chrome://') ||
+              event.request.url.startsWith('moz-extension://') ||
+              event.request.url.startsWith('safari-extension://')) {
+            return response;
+          }
+          
           const responseToCache = response.clone();
           caches.open(CACHE_NAME)
             .then((cache) => {

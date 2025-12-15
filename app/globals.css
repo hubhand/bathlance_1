@@ -19,3 +19,26 @@ body {
   font-family: var(--font-family-gaegu);
 }
 
+/* Number input 스피너 표시 */
+/* Firefox에서 스피너 숨김 제거 - 하지만 스피너를 보이게 하려면 이 줄을 제거해야 함 */
+/* input[type="number"] {
+  -moz-appearance: textfield;
+} */
+
+/* Chrome/Edge/Safari에서 스피너 강제 표시 */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  opacity: 1 !important;
+  height: 20px !important;
+  width: 20px !important;
+  -webkit-appearance: inner-spin-button !important;
+  display: inline-block !important;
+  cursor: pointer !important;
+  flex-shrink: 0 !important;
+  align-self: stretch !important;
+  -webkit-user-select: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  position: relative !important;
+}
+

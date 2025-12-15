@@ -5,10 +5,9 @@ import {
   GeminiIngredientsResponse,
 } from "../types";
 
-// FIX: Per coding guidelines, the API key must be obtained directly from the environment variable.
-// We assume `process.env.GEMINI_API_KEY` is pre-configured and valid.
-const apiKey =
-  process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+// API 키는 서버 사이드에서만 사용 (클라이언트에 노출하지 않음)
+// 이 파일은 app/api/gemini/analyze/route.ts에서만 호출됨
+const apiKey = process.env.GEMINI_API_KEY;
 if (!apiKey) {
   throw new Error(
     "GEMINI_API_KEY 환경 변수가 설정되지 않았습니다. .env.local 파일에 GEMINI_API_KEY를 추가해주세요."
@@ -86,7 +85,7 @@ export const analyzeProductImage = async (
   imageBase64: string
 ): Promise<GeminiResponse> => {
   const prompt =
-    "이 욕실용품 사진을 분석해서 JSON 형식으로 응답해줘. '제품명', '분류', '개봉후사용기한' 필드는 반드시 포함해야 해. 만약 사진에 '개봉후사용기한(PAO)' 정보가 명확하게 보이지 않으면, 제품 종류를 분석해서 위생을 최우선으로 고려한 가장 이상적인 교체 주기를 개월 단위 숫자로 추정해서 '개봉후사용기한' 값으로 입력해줘. (예: 칫솔은 3개월, 수건은 6개월, 샤워볼은 1개월, 면도날은 1개월). 추가로 사진에 '제조일자'나 '개봉전유효기간'이 보인다면 그 정보도 함께 추출해줘. 분류는 '칫솔', '샴푸', '린스', '세안제', '바디워시', '수건', '면도기 헤드', '샤워볼', '샤워기 필터', '기타' 중에서 선택해줘.";
+    "이 욕실용품 사진을 분석해서 JSON 형식으로 응답해줘. '제품명', '분류', '개봉후사용기한' 필드는 반드시 포함해야 해. 만약 사진에 '개봉후사용기한(PAO)' 정보가 명확하게 보이지 않으면, 제품 종류를 분석해서 위생을 최우선으로 고려한 가장 이상적인 교체 주기를 개월 단위 숫자로 추정해서 '개봉후사용기한' 값으로 입력해줘. (예: 칫솔은 2개월, 수건은 6개월, 샤워볼은 1개월, 면도날은 1개월). 추가로 사진에 '제조일자'나 '개봉전유효기간'이 보인다면 그 정보도 함께 추출해줘. 분류는 '칫솔', '샴푸', '린스', '세안제', '바디워시', '수건', '면도기 헤드', '샤워볼', '샤워기 필터', '기타' 중에서 선택해줘.";
 
   const imagePart = {
     inlineData: {
@@ -134,6 +133,28 @@ export const analyzeProductImage = async (
     return parsedResponse;
   } catch (error) {
     console.error("Gemini API 호출 중 오류 발생:", error);
+
+    // Gemini API 과부하 에러 감지
+    if (error instanceof Error) {
+      const errorMessage = error.message || String(error);
+      if (
+        errorMessage.includes("overloaded") ||
+        errorMessage.includes("UNAVAILABLE") ||
+        errorMessage.includes("503")
+      ) {
+        throw new Error(
+          "Gemini API 서버가 일시적으로 과부하 상태입니다. 잠시 후 다시 시도해 주세요."
+        );
+      }
+      // 기존 에러 메시지가 있으면 그대로 사용
+      if (
+        errorMessage &&
+        !errorMessage.includes("제품 정보를 분석하는 데 실패")
+      ) {
+        throw error;
+      }
+    }
+
     throw new Error("제품 정보를 분석하는 데 실패했어요. 다시 시도해 주세요.");
   }
 };
@@ -167,25 +188,62 @@ export const analyzeIngredients = async (
 
     const jsonString = response.text?.trim() || "";
     if (!jsonString) {
+      console.error("Gemini API 응답이 비어있습니다.");
       throw new Error("응답 데이터가 없습니다.");
     }
-    const cleanedJsonString = jsonString
+
+    // JSON 파싱을 더 안전하게 처리
+    let cleanedJsonString = jsonString
       .replace(/^```json\n?/, "")
-      .replace(/\n?```$/, "");
-    const parsedResponse = JSON.parse(
-      cleanedJsonString
-    ) as GeminiIngredientsResponse;
+      .replace(/\n?```$/, "")
+      .replace(/^```\n?/, "")
+      .replace(/\n?```$/, "")
+      .trim();
+
+    let parsedResponse: GeminiIngredientsResponse;
+    try {
+      parsedResponse = JSON.parse(
+        cleanedJsonString
+      ) as GeminiIngredientsResponse;
+    } catch (parseError) {
+      console.error("JSON 파싱 실패:", parseError);
+      console.error("원본 응답:", jsonString.substring(0, 500)); // 처음 500자만 로그
+      throw new Error("응답 형식이 올바르지 않습니다.");
+    }
 
     if (
       !parsedResponse.ingredients ||
       !Array.isArray(parsedResponse.ingredients)
     ) {
+      console.error("응답 형식 오류:", parsedResponse);
       throw new Error("Invalid response format from Gemini API.");
     }
 
     return parsedResponse;
   } catch (error) {
     console.error("Gemini API (ingredients) 호출 중 오류 발생:", error);
+
+    // 에러가 이미 Error 객체인 경우
+    if (error instanceof Error) {
+      console.error("에러 상세:", error.message);
+      console.error("에러 스택:", error.stack);
+
+      // Gemini API 과부하 에러 감지
+      const errorMessage = error.message || String(error);
+      if (
+        errorMessage.includes("overloaded") ||
+        errorMessage.includes("UNAVAILABLE") ||
+        errorMessage.includes("503")
+      ) {
+        throw new Error(
+          "Gemini API 서버가 일시적으로 과부하 상태입니다. 잠시 후 다시 시도해 주세요."
+        );
+      }
+
+      // 기존 에러 메시지가 있으면 그대로 사용
+      throw error;
+    }
+
     throw new Error(
       "성분 정보를 분석하는 데 실패했어요. 전성분표가 잘 보이는 사진으로 다시 시도해 주세요."
     );

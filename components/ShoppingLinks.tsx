@@ -21,6 +21,8 @@ export const ShoppingLinks: React.FC<ShoppingLinksProps> = ({ productName, categ
         href={naverShoppingUrl}
         target="_blank"
         rel="noopener noreferrer"
+        onTouchStart={(e) => e.stopPropagation()}
+        onTouchEnd={(e) => e.stopPropagation()}
         className="flex items-center gap-1.5 px-3 py-1.5 bg-[#03C75A] hover:bg-[#02b350] text-white text-xs font-bold rounded-full transition-all hover:scale-105 shadow-sm"
       >
         <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
@@ -32,6 +34,8 @@ export const ShoppingLinks: React.FC<ShoppingLinksProps> = ({ productName, categ
         href={coupangUrl}
         target="_blank"
         rel="noopener noreferrer"
+        onTouchStart={(e) => e.stopPropagation()}
+        onTouchEnd={(e) => e.stopPropagation()}
         className="flex items-center gap-1.5 px-3 py-1.5 bg-[#E31937] hover:bg-[#c91530] text-white text-xs font-bold rounded-full transition-all hover:scale-105 shadow-sm"
       >
         <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">

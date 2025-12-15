@@ -42,14 +42,30 @@ CREATE TABLE IF NOT EXISTS diary_entries (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 4. 인덱스 생성 (성능 최적화)
+-- 4. 트러블 이력(trouble_history) 테이블 생성
+-- 제품을 삭제해도 트러블 이력은 남아있도록 별도 테이블에 저장
+CREATE TABLE IF NOT EXISTS trouble_history (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id TEXT NOT NULL, -- Clerk 사용자 ID
+  product_name TEXT NOT NULL, -- 제품 이름
+  category TEXT NOT NULL CHECK (category IN ('칫솔', '샴푸', '린스', '세안제', '바디워시', '수건', '면도기 헤드', '샤워볼', '샤워기 필터', '기타')),
+  ingredient_analysis JSONB, -- AI 성분 분석 결과 배열
+  review TEXT, -- 사용자가 남긴 후기
+  product_id UUID REFERENCES products(id) ON DELETE SET NULL, -- 원본 제품 ID (제품 삭제 시 NULL로 변경)
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 5. 인덱스 생성 (성능 최적화)
 CREATE INDEX IF NOT EXISTS idx_products_user_id ON products(user_id);
 CREATE INDEX IF NOT EXISTS idx_products_user_id_order ON products(user_id, display_order);
 CREATE INDEX IF NOT EXISTS idx_shopping_list_user_id ON shopping_list(user_id);
 CREATE INDEX IF NOT EXISTS idx_diary_entries_user_id ON diary_entries(user_id);
 CREATE INDEX IF NOT EXISTS idx_diary_entries_user_date ON diary_entries(user_id, date DESC);
+CREATE INDEX IF NOT EXISTS idx_trouble_history_user_id ON trouble_history(user_id);
+CREATE INDEX IF NOT EXISTS idx_trouble_history_user_name ON trouble_history(user_id, product_name);
 
--- 5. Row Level Security (RLS) 정책 설정
+-- 6. Row Level Security (RLS) 정책 설정
 -- 주의: Clerk JWT를 Supabase에서 인증하려면 추가 설정이 필요합니다.
 -- 현재는 애플리케이션 레벨에서 user_id로 필터링하므로 RLS를 비활성화합니다.
 -- 나중에 Clerk JWT를 Supabase에 통합하면 아래 주석을 해제하고 사용하세요.
@@ -59,7 +75,7 @@ CREATE INDEX IF NOT EXISTS idx_diary_entries_user_date ON diary_entries(user_id,
 -- ALTER TABLE shopping_list ENABLE ROW LEVEL SECURITY;
 -- ALTER TABLE diary_entries ENABLE ROW LEVEL SECURITY;
 
--- 6. RLS 정책: 사용자는 자신의 데이터만 조회/수정/삭제 가능
+-- 7. RLS 정책: 사용자는 자신의 데이터만 조회/수정/삭제 가능
 -- Clerk JWT를 Supabase에 통합한 후 사용할 정책 (현재는 주석 처리)
 -- 
 -- products 테이블
@@ -113,7 +129,7 @@ CREATE INDEX IF NOT EXISTS idx_diary_entries_user_date ON diary_entries(user_id,
 --   ON diary_entries FOR DELETE
 --   USING (auth.jwt() ->> 'sub' = user_id);
 
--- 7. updated_at 자동 업데이트 함수
+-- 8. updated_at 자동 업데이트 함수
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -122,10 +138,13 @@ BEGIN
 END;
 $$ language 'plpgsql';
 
--- 8. updated_at 트리거 생성
+-- 9. updated_at 트리거 생성
 CREATE TRIGGER update_products_updated_at BEFORE UPDATE ON products
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 CREATE TRIGGER update_shopping_list_updated_at BEFORE UPDATE ON shopping_list
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_trouble_history_updated_at BEFORE UPDATE ON trouble_history
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 

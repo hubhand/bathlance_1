@@ -41,33 +41,77 @@ export default function HomePage() {
         10
     );
     const notifiedProducts = new Set(JSON.parse(sessionStorage.getItem('notifiedProducts') || '[]'));
+    const autoAddedToShoppingList = new Set(JSON.parse(sessionStorage.getItem('autoAddedToShoppingList') || '[]'));
     
     products.forEach(product => {
       const daysRemaining = getDaysRemaining(product.expiryDate);
       if (daysRemaining > 0 && daysRemaining <= notificationDays && !notifiedProducts.has(product.id)) {
-        alert(`🧴 "${product.name}" 교체 시기가 ${daysRemaining}일 남았어요! 새 제품으로 상쾌하게 시작할 시간이에요! ✨`);
+        const message = `🧴 "${product.name}" 교체 시기가 ${daysRemaining}일 남았어요! 새 제품으로 상쾌하게 시작할 시간이에요! ✨`;
+        alert(message);
+        
+        // 지금 바로 구매하기 옵션 제공
+        const shouldBuy = confirm('🛒 지금 바로 구매하시겠어요?');
+        if (shouldBuy) {
+          const searchQuery = encodeURIComponent(`${product.name} ${product.category}`);
+          window.open(`https://search.shopping.naver.com/search/all?query=${searchQuery}&sort=price_asc`, '_blank');
+        }
+        
         notifiedProducts.add(product.id);
+      }
+      
+      // 재고가 0인 제품을 자동으로 쇼핑 리스트에 추가
+      if (product.stock === 0 && !autoAddedToShoppingList.has(product.id)) {
+        const alreadyInList = shoppingList.some(item => item.productId === product.id);
+        if (!alreadyInList) {
+          addShoppingListItem({ name: product.name, productId: product.id });
+          autoAddedToShoppingList.add(product.id);
+          
+          // 구매 목록에 추가됨 알람 후 지금 바로 구매하기 옵션 제공
+          const shouldBuy = confirm(`🛒 "${product.name}"이(가) 구매 목록에 추가되었어요!\n\n지금 바로 구매하시겠어요?`);
+          if (shouldBuy) {
+            const searchQuery = encodeURIComponent(`${product.name} ${product.category}`);
+            window.open(`https://search.shopping.naver.com/search/all?query=${searchQuery}&sort=price_asc`, '_blank');
+          }
+        }
       }
     });
 
     sessionStorage.setItem('notifiedProducts', JSON.stringify(Array.from(notifiedProducts)));
+    sessionStorage.setItem('autoAddedToShoppingList', JSON.stringify(Array.from(autoAddedToShoppingList)));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [products]);
 
-  const handleAddMultipleProducts = useCallback((productsToAdd: Omit<Product, 'id'>[]) => {
-    addMultipleProducts(productsToAdd);
-    setActiveScreen('home');
+  const handleAddMultipleProducts = useCallback(async (productsToAdd: Omit<Product, 'id'>[]) => {
+    try {
+      await addMultipleProducts(productsToAdd);
+      setActiveScreen('home');
+    } catch (error) {
+      console.error('제품 등록 실패:', error);
+      // 에러는 AddProductScreen에서 처리하므로 여기서는 화면 전환만 하지 않음
+      throw error; // AddProductScreen에서 에러를 잡을 수 있도록 다시 throw
+    }
   }, [addMultipleProducts]);
 
   const handleOpenAddScreen = useCallback(() => {
     setActiveScreen('add');
   }, []);
 
-  const handleUpdateProduct = useCallback((product: Product) => {
-    updateProduct(product);
-    setActiveScreen('home');
-    setSelectedProduct(null);
-  }, [updateProduct]);
+  const handleUpdateProduct = useCallback(async (product: Product) => {
+    try {
+      await updateProduct(product);
+      // 수정된 제품으로 selectedProduct 업데이트 (다시 편집 화면으로 돌아갔을 때 최신 데이터 표시)
+      const updatedProduct = products.find(p => p.id === product.id) || product;
+      setSelectedProduct(updatedProduct);
+      setActiveScreen('home');
+      // 잠시 후 selectedProduct 초기화하여 다음 편집 시 최신 데이터 로드
+      setTimeout(() => {
+        setSelectedProduct(null);
+      }, 100);
+    } catch (error) {
+      console.error('제품 수정 실패:', error);
+      // 에러가 발생해도 화면은 전환하지 않음
+    }
+  }, [updateProduct, products]);
 
   const handleDeleteProduct = useCallback((productId: string) => {
     setProductToDelete(productId);
@@ -115,12 +159,19 @@ export default function HomePage() {
 
   }, [products, updateProduct, addShoppingListItem, shoppingList]);
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (productToDelete) {
-      deleteProduct(productToDelete);
+      try {
+        await deleteProduct(productToDelete);
+        // 삭제 성공 시에만 모달 닫기
+        setIsDeleteModalOpen(false);
+        setProductToDelete(null);
+      } catch (error) {
+        console.error('제품 삭제 실패:', error);
+        alert('제품 삭제에 실패했어요. 다시 시도해주세요.');
+        // 에러 발생 시 모달은 열어두기
+      }
     }
-    setIsDeleteModalOpen(false);
-    setProductToDelete(null);
   };
 
   const cancelDelete = () => {

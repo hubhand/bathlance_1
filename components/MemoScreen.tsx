@@ -21,21 +21,32 @@ const ShoppingList: React.FC<Omit<MemoScreenProps, 'diaryEntries' | 'onAddEntry'
     const checkedItems = shoppingList.filter(item => item.checked);
     const hasCheckedItems = checkedItems.length > 0;
 
-    // 체크된 품목들의 이름을 합쳐서 검색어 생성
-    const getSearchQuery = () => {
-        return checkedItems.map(item => item.name).join(' ');
-    };
-
-    // 네이버 쇼핑 최저가 검색 URL
+    // 네이버 쇼핑 최저가 검색 - 각 품목을 개별 탭으로 열기
     const openNaverShopping = () => {
-        const query = encodeURIComponent(getSearchQuery());
-        window.open(`https://search.shopping.naver.com/search/all?query=${query}&sort=price_asc`, '_blank');
+        if (checkedItems.length === 0) return;
+        
+        // 각 품목을 개별 탭으로 열기
+        checkedItems.forEach((item, index) => {
+            const query = encodeURIComponent(item.name);
+            // 첫 번째 탭은 즉시 열고, 나머지는 약간의 지연을 두어 팝업 차단 방지
+            setTimeout(() => {
+                window.open(`https://search.shopping.naver.com/search/all?query=${query}&sort=price_asc`, '_blank');
+            }, index * 200); // 200ms 간격으로 열기
+        });
     };
 
-    // 쿠팡 검색 URL
+    // 쿠팡 검색 - 각 품목을 개별 탭으로 열기
     const openCoupang = () => {
-        const query = encodeURIComponent(getSearchQuery());
-        window.open(`https://www.coupang.com/np/search?component=&q=${query}&channel=user`, '_blank');
+        if (checkedItems.length === 0) return;
+        
+        // 각 품목을 개별 탭으로 열기
+        checkedItems.forEach((item, index) => {
+            const query = encodeURIComponent(item.name);
+            // 첫 번째 탭은 즉시 열고, 나머지는 약간의 지연을 두어 팝업 차단 방지
+            setTimeout(() => {
+                window.open(`https://www.coupang.com/np/search?component=&q=${query}&channel=user`, '_blank');
+            }, index * 200); // 200ms 간격으로 열기
+        });
     };
 
     const handleAddItem = (e: React.FormEvent) => {
