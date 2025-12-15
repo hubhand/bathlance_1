@@ -26,7 +26,6 @@ export const useMemos = () => {
     const loadMemos = async () => {
       // ⚠️ 핵심: 업데이트 중인 항목이 있으면 로드 건너뛰기
       if (updatingItemsRef.current.size > 0) {
-        console.log('업데이트 중인 항목이 있으므로 로드 건너뜀:', Array.from(updatingItemsRef.current));
         return;
       }
 
@@ -71,13 +70,6 @@ export const useMemos = () => {
             }));
             setDiaryEntries(convertedDiaryEntries);
           }
-        } else {
-          if (isAddingDiaryRef.current) {
-            console.log('일기 추가 중이므로 일기 로드 건너뜀');
-          }
-          if (deletingDiaryEntriesRef.current.size > 0) {
-            console.log('일기 삭제 중이므로 일기 로드 건너뜀:', Array.from(deletingDiaryEntriesRef.current));
-          }
         }
       } catch (error) {
         console.error('메모를 불러오는 데 실패했습니다:', error);
@@ -102,17 +94,14 @@ export const useMemos = () => {
         (payload) => {
           // ⚠️ 핵심: 업데이트 중인 항목이 있으면 전체 로드도 건너뛰기
           if (updatingItemsRef.current.size > 0) {
-            console.log('업데이트 중인 항목이 있으므로 실시간 업데이트 무시');
             return;
           }
           
           // 업데이트 중인 항목이면 무시
           const itemId = (payload.new as { id?: string } | null)?.id || (payload.old as { id?: string } | null)?.id;
           if (itemId && updatingItemsRef.current.has(itemId)) {
-            console.log('업데이트 중인 항목이므로 실시간 업데이트 무시:', itemId);
             return;
           }
-          console.log('실시간 업데이트 수신:', payload.eventType, itemId);
           loadMemos();
         }
       )
@@ -132,15 +121,12 @@ export const useMemos = () => {
           // 일기 추가 중이거나 삭제 중이면 무시
           const entryId = (payload.new as { id?: string } | null)?.id || (payload.old as { id?: string } | null)?.id;
           if (isAddingDiaryRef.current) {
-            console.log('일기 추가 중이므로 실시간 업데이트 무시');
             return;
           }
           if (entryId && deletingDiaryEntriesRef.current.has(entryId)) {
-            console.log('일기 삭제 중이므로 실시간 업데이트 무시:', entryId);
             return;
           }
           if (deletingDiaryEntriesRef.current.size > 0) {
-            console.log('일기 삭제 중이므로 실시간 업데이트 무시');
             return;
           }
           loadMemos();
@@ -225,7 +211,6 @@ export const useMemos = () => {
       // 이미 체크되어 있으면 해제만 하고, 체크되지 않았으면 다른 항목들을 모두 해제하고 이 항목만 체크
       const newCheckedState = !item.checked;
       
-      console.log('쇼핑 리스트 체크 토글 시도:', { itemId, 현재상태: item.checked, 변경될상태: newCheckedState });
 
       // 업데이트할 항목들 수집 (현재 항목 + 다른 체크된 항목들)
       const itemsToUpdate: string[] = [];
@@ -281,9 +266,6 @@ export const useMemos = () => {
 
       const results = await Promise.all(updatePromises);
 
-      // 에러가 없으면 성공
-      console.log('쇼핑 리스트 체크 토글 성공:', results);
-      
       // 잠시 후 업데이트 플래그 제거 (실시간 구독이 다시 작동하도록)
       setTimeout(() => {
         itemsToUpdate.forEach(id => updatingItemsRef.current.delete(id));
@@ -321,7 +303,6 @@ export const useMemos = () => {
     }
 
     try {
-      console.log('쇼핑 리스트 항목 삭제 시도:', itemId);
 
       // 삭제할 항목 저장 (에러 시 복구용)
       const itemToDelete = shoppingList.find(i => i.id === itemId);
@@ -350,8 +331,6 @@ export const useMemos = () => {
         throw error;
       }
 
-      console.log('쇼핑 리스트 항목 삭제 성공:', data);
-      
       // 잠시 후 업데이트 플래그 제거
       setTimeout(() => {
         updatingItemsRef.current.delete(itemId);
@@ -434,7 +413,6 @@ export const useMemos = () => {
     if (!user) return;
 
     try {
-      console.log('일기 삭제 시도:', entryId);
 
       // 삭제할 항목 저장 (에러 시 복구용)
       const entryToDelete = diaryEntries.find(e => e.id === entryId);
@@ -466,8 +444,6 @@ export const useMemos = () => {
         throw error;
       }
 
-      console.log('일기 삭제 성공:', entryId);
-      
       // 잠시 후 삭제 플래그 제거
       setTimeout(() => {
         deletingDiaryEntriesRef.current.delete(entryId);

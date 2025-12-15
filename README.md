@@ -12,9 +12,25 @@ View your app in AI Studio: https://ai.studio/apps/drive/1u4K2W1eN0PbhZKyBU8izaX
 
 **Prerequisites:**  Node.js
 
-
 1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
+   ```bash
+   pnpm install
+   ```
+
+2. Set environment variables in `.env.local`:
+   - `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`
+   - `CLERK_SECRET_KEY`
+   - `GEMINI_API_KEY`
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+
 3. Run the app:
-   `npm run dev`
+   ```bash
+   pnpm run dev
+   ```
+
+## 배포 (Deployment)
+
+Vercel에 배포하는 방법은 [VERCEL_DEPLOYMENT.md](./VERCEL_DEPLOYMENT.md) 파일을 참고하세요.
+
+배포 체크리스트는 [DEPLOYMENT_CHECKLIST.md](./DEPLOYMENT_CHECKLIST.md) 파일을 참고하세요.

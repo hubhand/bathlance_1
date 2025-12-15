@@ -52,15 +52,6 @@ export const useProducts = () => {
             item.stock !== null && item.stock !== undefined ? item.stock : 1,
         }));
 
-        console.log("제품 목록 불러오기 성공:", convertedProducts.length, "개");
-        console.log(
-          "재고 수량 확인:",
-          convertedProducts.map((p) => ({
-            id: p.id,
-            name: p.name,
-            stock: p.stock,
-          }))
-        );
         setProducts(convertedProducts);
       } catch (error) {
         console.error("제품을 불러오는 데 실패했습니다:", error);
@@ -93,10 +84,6 @@ export const useProducts = () => {
           if (payload.eventType === "DELETE") {
             const deletedId = payload.old?.id;
             if (deletedId && deletingProductsRef.current.has(deletedId)) {
-              console.log(
-                "삭제 중인 제품이므로 실시간 업데이트 무시:",
-                deletedId
-              );
               deletingProductsRef.current.delete(deletedId);
               return;
             }
@@ -284,8 +271,6 @@ export const useProducts = () => {
         }
         // 트러블 체크를 해제한 경우에도 이력은 보존 (삭제하지 않음)
 
-        console.log("제품 수정 성공:", data);
-
         // 즉시 로컬 상태 업데이트 (실시간 구독을 기다리지 않음)
         if (data && data.length > 0) {
           const updatedItem = data[0];
@@ -365,7 +350,6 @@ export const useProducts = () => {
           throw error;
         }
 
-        console.log("제품 삭제 성공:", productId);
         // 삭제 성공 후 잠시 후 추적 제거 (실시간 구독 처리 대기)
         setTimeout(() => {
           deletingProductsRef.current.delete(productId);

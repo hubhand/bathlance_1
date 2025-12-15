@@ -67,18 +67,15 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           onClick={(e) => {
             e.stopPropagation();
             e.preventDefault();
-            console.log("위로 이동 버튼 onClick 호출, canMoveUp:", canMoveUp);
             if (canMoveUp) {
               onMoveUp?.();
             }
           }}
           onTouchStart={(e) => {
             e.stopPropagation();
-            console.log("위로 이동 버튼 onTouchStart");
           }}
           onTouchEnd={(e) => {
             e.stopPropagation();
-            console.log("위로 이동 버튼 onTouchEnd, canMoveUp:", canMoveUp);
             if (canMoveUp) {
               onMoveUp?.();
             }
@@ -98,24 +95,15 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           onClick={(e) => {
             e.stopPropagation();
             e.preventDefault();
-            console.log(
-              "아래로 이동 버튼 onClick 호출, canMoveDown:",
-              canMoveDown
-            );
             if (canMoveDown) {
               onMoveDown?.();
             }
           }}
           onTouchStart={(e) => {
             e.stopPropagation();
-            console.log("아래로 이동 버튼 onTouchStart");
           }}
           onTouchEnd={(e) => {
             e.stopPropagation();
-            console.log(
-              "아래로 이동 버튼 onTouchEnd, canMoveDown:",
-              canMoveDown
-            );
             if (canMoveDown) {
               onMoveDown?.();
             }

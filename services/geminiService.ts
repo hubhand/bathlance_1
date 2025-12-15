@@ -7,13 +7,21 @@ import {
 
 // API 키는 서버 사이드에서만 사용 (클라이언트에 노출하지 않음)
 // 이 파일은 app/api/gemini/analyze/route.ts에서만 호출됨
-const apiKey = process.env.GEMINI_API_KEY;
-if (!apiKey) {
-  throw new Error(
-    "GEMINI_API_KEY 환경 변수가 설정되지 않았습니다. .env.local 파일에 GEMINI_API_KEY를 추가해주세요."
-  );
-}
-const ai = new GoogleGenAI({ apiKey });
+// 지연 초기화: 함수가 호출될 때만 API 키를 체크하고 인스턴스를 생성
+let aiInstance: GoogleGenAI | null = null;
+
+const getAI = (): GoogleGenAI => {
+  if (!aiInstance) {
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      throw new Error(
+        "GEMINI_API_KEY 환경 변수가 설정되지 않았습니다. .env.local 파일에 GEMINI_API_KEY를 추가해주세요."
+      );
+    }
+    aiInstance = new GoogleGenAI({ apiKey });
+  }
+  return aiInstance;
+};
 
 const model = "gemini-2.5-flash";
 
@@ -84,6 +92,7 @@ const ingredientsSchema = {
 export const analyzeProductImage = async (
   imageBase64: string
 ): Promise<GeminiResponse> => {
+  const ai = getAI(); // 함수 호출 시점에 초기화
   const prompt =
     "이 욕실용품 사진을 분석해서 JSON 형식으로 응답해줘. '제품명', '분류', '개봉후사용기한' 필드는 반드시 포함해야 해. 만약 사진에 '개봉후사용기한(PAO)' 정보가 명확하게 보이지 않으면, 제품 종류를 분석해서 위생을 최우선으로 고려한 가장 이상적인 교체 주기를 개월 단위 숫자로 추정해서 '개봉후사용기한' 값으로 입력해줘. (예: 칫솔은 2개월, 수건은 6개월, 샤워볼은 1개월, 면도날은 1개월). 추가로 사진에 '제조일자'나 '개봉전유효기간'이 보인다면 그 정보도 함께 추출해줘. 분류는 '칫솔', '샴푸', '린스', '세안제', '바디워시', '수건', '면도기 헤드', '샤워볼', '샤워기 필터', '기타' 중에서 선택해줘.";
 
@@ -162,6 +171,7 @@ export const analyzeProductImage = async (
 export const analyzeIngredients = async (
   imageBase64: string
 ): Promise<GeminiIngredientsResponse> => {
+  const ai = getAI(); // 함수 호출 시점에 초기화
   const prompt =
     "이 제품 사진 뒷면의 전성분 목록을 분석해줘. 각 성분에 대해 한국어 이름, EWG 안전 등급, 식약처 고시 알레르기 유발 주의 성분 여부를 알려줘. EWG 등급은 숫자나 범위로 표기하고, 알레르기 유발 가능성이 있다면 true로 표시해줘. JSON 형식으로 응답해줘. 성분이 너무 많으면 주요 성분 20개까지만 분석해줘.";
 

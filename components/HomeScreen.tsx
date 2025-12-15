@@ -98,13 +98,10 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
     touchStartIndex.current = index;
     currentTouchElement.current = e.currentTarget;
 
-    console.log("터치 시작:", index);
-
     // 길게 누르기 감지 (300ms로 단축하여 더 빠르게 반응)
     longPressCompleted.current = false; // 초기화
     lastDragOverIndex.current = null; // 드래그 오버 인덱스 초기화
     longPressTimer.current = setTimeout(() => {
-      console.log("길게 누르기 완료:", index);
       isLongPressingRef.current = true;
       setIsLongPressing(true);
       setDraggedItemIndex(index);
@@ -176,7 +173,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         targetIndex !== currentDragIndex &&
         lastDragOverIndex.current !== targetIndex
       ) {
-        console.log("드래그 중:", currentDragIndex, "->", targetIndex);
         lastDragOverIndex.current = targetIndex;
         setDragOverItemIndex(targetIndex);
       }
@@ -194,12 +190,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
 
   const handleTouchEnd = () => {
     const currentDragIndex = touchStartIndex.current;
-    console.log("터치 종료:", {
-      isLongPressing,
-      draggedItemIndex,
-      currentDragIndex,
-      dragOverItemIndex,
-    });
 
     // 타이머 정리
     if (longPressTimer.current) {
@@ -215,7 +205,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
       dragOverItemIndex !== null &&
       currentDragIndex !== dragOverItemIndex
     ) {
-      console.log("순서 변경:", currentDragIndex, "->", dragOverItemIndex);
       const newProducts = [...products];
       const [draggedItem] = newProducts.splice(currentDragIndex, 1);
       newProducts.splice(dragOverItemIndex, 0, draggedItem);
@@ -264,57 +253,23 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
 
   // 위로 이동 핸들러
   const handleMoveUp = (index: number) => {
-    console.log(
-      "handleMoveUp 호출:",
-      index,
-      "products.length:",
-      products.length
-    );
-    if (index === 0) {
-      console.log("첫 번째 항목이므로 이동 불가");
-      return;
-    }
+    if (index === 0) return; // 첫 번째 항목은 위로 이동 불가
 
     const newProducts = [...products];
     const [movedItem] = newProducts.splice(index, 1);
     newProducts.splice(index - 1, 0, movedItem);
 
-    console.log(
-      "순서 변경 전:",
-      products.map((p, i) => `${i}: ${p.name}`)
-    );
-    console.log(
-      "순서 변경 후:",
-      newProducts.map((p, i) => `${i}: ${p.name}`)
-    );
     onReorderProducts(newProducts);
   };
 
   // 아래로 이동 핸들러
   const handleMoveDown = (index: number) => {
-    console.log(
-      "handleMoveDown 호출:",
-      index,
-      "products.length:",
-      products.length
-    );
-    if (index === products.length - 1) {
-      console.log("마지막 항목이므로 이동 불가");
-      return;
-    }
+    if (index === products.length - 1) return; // 마지막 항목은 아래로 이동 불가
 
     const newProducts = [...products];
     const [movedItem] = newProducts.splice(index, 1);
     newProducts.splice(index + 1, 0, movedItem);
 
-    console.log(
-      "순서 변경 전:",
-      products.map((p, i) => `${i}: ${p.name}`)
-    );
-    console.log(
-      "순서 변경 후:",
-      newProducts.map((p, i) => `${i}: ${p.name}`)
-    );
     onReorderProducts(newProducts);
   };
 

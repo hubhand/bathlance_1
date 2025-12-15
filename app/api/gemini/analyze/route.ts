@@ -20,15 +20,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log(`[Gemini API] 요청 타입: ${type}, 이미지 데이터 길이: ${imageBase64.length}`);
-
     if (type === 'ingredients') {
       const result = await analyzeIngredients(imageBase64);
-      console.log(`[Gemini API] 성분 분석 성공: ${result.ingredients?.length || 0}개 성분`);
       return NextResponse.json(result);
     } else {
       const result = await analyzeProductImage(imageBase64);
-      console.log(`[Gemini API] 제품 분석 성공: ${result.제품명}`);
       return NextResponse.json(result);
     }
   } catch (error) {

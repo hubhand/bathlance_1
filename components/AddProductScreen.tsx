@@ -140,25 +140,15 @@ export const AddProductScreen: React.FC<AddProductScreenProps> = ({
             const ingredientsResult =
               (await ingredientsResponse.json()) as GeminiIngredientsResponse;
             ingredientAnalysis = ingredientsResult.ingredients;
-            console.log(
-              `성분 분석 성공: ${
-                ingredientsResult.ingredients?.length || 0
-              }개 성분`
-            );
           } else {
             // 429 에러인 경우에도 제품 등록은 계속 진행
             if (ingredientsResponse.status === 429) {
-              console.log("성분 분석 할당량 초과 (제품 등록은 계속 진행)");
-            } else {
-              console.log("성분 분석 실패 (제품 등록은 계속 진행)");
+              // 성분 분석 할당량 초과 (제품 등록은 계속 진행)
             }
           }
         } catch (ingredientsError) {
           // 성분 분석 실패해도 제품 등록은 계속 진행
-          console.log(
-            "성분 분석 중 오류 발생 (제품 등록은 계속 진행):",
-            ingredientsError
-          );
+          console.error("성분 분석 중 오류 발생:", ingredientsError);
         }
 
         // 🔍 트러블 발생 이력 확인

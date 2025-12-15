@@ -176,15 +176,8 @@ export const EditProductScreen: React.FC<EditProductScreenProps> = ({ product, o
       stock: finalStock,
     };
     
-    console.log('재고 수량 수정 시도:', { 
-      원본값: formData.stock, 
-      최종값: finalStock,
-      전체데이터: productToSave 
-    });
-    
     try {
       await onUpdateProduct(productToSave);
-      console.log('재고 수량 수정 성공');
     } catch (error) {
       console.error('재고 수량 수정 실패:', error);
       alert('재고 수량 수정에 실패했어요. 콘솔을 확인해주세요.');

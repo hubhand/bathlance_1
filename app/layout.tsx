@@ -33,8 +33,14 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const publishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+  
+  if (!publishableKey) {
+    throw new Error('NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY is missing');
+  }
+
   return (
-    <ClerkProvider>
+    <ClerkProvider publishableKey={publishableKey}>
       <html lang="ko">
         <head>
           <link rel="preconnect" href="https://fonts.googleapis.com" />
