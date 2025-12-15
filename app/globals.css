@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bathlance-orange: #e1621c;
+  --color-bathlance-cream: #f7e0a4;
+  --color-bathlance-brown: #a56b2f;
+  --color-bathlance-yellow: #FFD93B;
+  --color-bathlance-gray: #dfdcd2;
+  
+  --radius-cute: 1.5rem;
+  
+  --shadow-cute: 0 4px 12px rgba(225, 98, 28, 0.15);
+  --shadow-cute-lg: 0 8px 24px rgba(225, 98, 28, 0.2);
+  
+  --font-family-gaegu: 'Gaegu', cursive;
+}
+
+body {
+  font-family: var(--font-family-gaegu);
+}
+

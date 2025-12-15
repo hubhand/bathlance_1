@@ -1,0 +1,131 @@
+-- BATHLANCE 데이터베이스 스키마
+-- Supabase 대시보드의 SQL Editor에서 실행하세요
+
+-- 1. 제품(products) 테이블 생성
+CREATE TABLE IF NOT EXISTS products (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id TEXT NOT NULL, -- Clerk 사용자 ID
+  name TEXT NOT NULL,
+  category TEXT NOT NULL CHECK (category IN ('칫솔', '샴푸', '린스', '세안제', '바디워시', '수건', '면도기 헤드', '샤워볼', '샤워기 필터', '기타')),
+  registration_date TIMESTAMPTZ NOT NULL,
+  expiry_date TIMESTAMPTZ NOT NULL,
+  image_url TEXT NOT NULL, -- Data URL 저장
+  manufacturing_date TIMESTAMPTZ,
+  expiry_period_before_opening INTEGER, -- 개봉 전 유효기간 (개월)
+  period_after_opening INTEGER, -- 개봉 후 사용기한 (개월)
+  ingredient_analysis JSONB, -- 성분 분석 결과 배열
+  review TEXT, -- 간단 후기
+  has_trouble BOOLEAN DEFAULT FALSE, -- 트러블 발생 여부
+  stock INTEGER DEFAULT 1, -- 재고 수량
+  display_order INTEGER DEFAULT 0, -- 드래그 앤 드롭 순서
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 2. 쇼핑 리스트(shopping_list) 테이블 생성
+CREATE TABLE IF NOT EXISTS shopping_list (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id TEXT NOT NULL, -- Clerk 사용자 ID
+  name TEXT NOT NULL,
+  checked BOOLEAN DEFAULT FALSE,
+  product_id UUID REFERENCES products(id) ON DELETE SET NULL, -- 제품과 연결 (선택사항)
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 3. 샤워 일기(diary_entries) 테이블 생성
+CREATE TABLE IF NOT EXISTS diary_entries (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id TEXT NOT NULL, -- Clerk 사용자 ID
+  content TEXT NOT NULL,
+  date TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 4. 인덱스 생성 (성능 최적화)
+CREATE INDEX IF NOT EXISTS idx_products_user_id ON products(user_id);
+CREATE INDEX IF NOT EXISTS idx_products_user_id_order ON products(user_id, display_order);
+CREATE INDEX IF NOT EXISTS idx_shopping_list_user_id ON shopping_list(user_id);
+CREATE INDEX IF NOT EXISTS idx_diary_entries_user_id ON diary_entries(user_id);
+CREATE INDEX IF NOT EXISTS idx_diary_entries_user_date ON diary_entries(user_id, date DESC);
+
+-- 5. Row Level Security (RLS) 정책 설정
+-- 주의: Clerk JWT를 Supabase에서 인증하려면 추가 설정이 필요합니다.
+-- 현재는 애플리케이션 레벨에서 user_id로 필터링하므로 RLS를 비활성화합니다.
+-- 나중에 Clerk JWT를 Supabase에 통합하면 아래 주석을 해제하고 사용하세요.
+
+-- 모든 테이블에 RLS 활성화 (현재는 비활성화)
+-- ALTER TABLE products ENABLE ROW LEVEL SECURITY;
+-- ALTER TABLE shopping_list ENABLE ROW LEVEL SECURITY;
+-- ALTER TABLE diary_entries ENABLE ROW LEVEL SECURITY;
+
+-- 6. RLS 정책: 사용자는 자신의 데이터만 조회/수정/삭제 가능
+-- Clerk JWT를 Supabase에 통합한 후 사용할 정책 (현재는 주석 처리)
+-- 
+-- products 테이블
+-- CREATE POLICY "사용자는 자신의 제품만 조회 가능"
+--   ON products FOR SELECT
+--   USING (auth.jwt() ->> 'sub' = user_id);
+--
+-- CREATE POLICY "사용자는 자신의 제품만 생성 가능"
+--   ON products FOR INSERT
+--   WITH CHECK (auth.jwt() ->> 'sub' = user_id);
+--
+-- CREATE POLICY "사용자는 자신의 제품만 수정 가능"
+--   ON products FOR UPDATE
+--   USING (auth.jwt() ->> 'sub' = user_id);
+--
+-- CREATE POLICY "사용자는 자신의 제품만 삭제 가능"
+--   ON products FOR DELETE
+--   USING (auth.jwt() ->> 'sub' = user_id);
+--
+-- shopping_list 테이블
+-- CREATE POLICY "사용자는 자신의 쇼핑 리스트만 조회 가능"
+--   ON shopping_list FOR SELECT
+--   USING (auth.jwt() ->> 'sub' = user_id);
+--
+-- CREATE POLICY "사용자는 자신의 쇼핑 리스트만 생성 가능"
+--   ON shopping_list FOR INSERT
+--   WITH CHECK (auth.jwt() ->> 'sub' = user_id);
+--
+-- CREATE POLICY "사용자는 자신의 쇼핑 리스트만 수정 가능"
+--   ON shopping_list FOR UPDATE
+--   USING (auth.jwt() ->> 'sub' = user_id);
+--
+-- CREATE POLICY "사용자는 자신의 쇼핑 리스트만 삭제 가능"
+--   ON shopping_list FOR DELETE
+--   USING (auth.jwt() ->> 'sub' = user_id);
+--
+-- diary_entries 테이블
+-- CREATE POLICY "사용자는 자신의 일기만 조회 가능"
+--   ON diary_entries FOR SELECT
+--   USING (auth.jwt() ->> 'sub' = user_id);
+--
+-- CREATE POLICY "사용자는 자신의 일기만 생성 가능"
+--   ON diary_entries FOR INSERT
+--   WITH CHECK (auth.jwt() ->> 'sub' = user_id);
+--
+-- CREATE POLICY "사용자는 자신의 일기만 수정 가능"
+--   ON diary_entries FOR UPDATE
+--   USING (auth.jwt() ->> 'sub' = user_id);
+--
+-- CREATE POLICY "사용자는 자신의 일기만 삭제 가능"
+--   ON diary_entries FOR DELETE
+--   USING (auth.jwt() ->> 'sub' = user_id);
+
+-- 7. updated_at 자동 업데이트 함수
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = NOW();
+  RETURN NEW;
+END;
+$$ language 'plpgsql';
+
+-- 8. updated_at 트리거 생성
+CREATE TRIGGER update_products_updated_at BEFORE UPDATE ON products
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_shopping_list_updated_at BEFORE UPDATE ON shopping_list
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
