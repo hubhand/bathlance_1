@@ -107,7 +107,7 @@ export const useMemos = () => {
           }
           
           // 업데이트 중인 항목이면 무시
-          const itemId = payload.new?.id || payload.old?.id;
+          const itemId = (payload.new as { id?: string } | null)?.id || (payload.old as { id?: string } | null)?.id;
           if (itemId && updatingItemsRef.current.has(itemId)) {
             console.log('업데이트 중인 항목이므로 실시간 업데이트 무시:', itemId);
             return;
@@ -130,7 +130,7 @@ export const useMemos = () => {
         },
         (payload) => {
           // 일기 추가 중이거나 삭제 중이면 무시
-          const entryId = payload.new?.id || payload.old?.id;
+          const entryId = (payload.new as { id?: string } | null)?.id || (payload.old as { id?: string } | null)?.id;
           if (isAddingDiaryRef.current) {
             console.log('일기 추가 중이므로 실시간 업데이트 무시');
             return;
