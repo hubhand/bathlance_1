@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bathlance-v1';
+const CACHE_NAME = 'bathlance-v2';
 const urlsToCache = [
   '/',
   '/manifest.json',
@@ -9,10 +9,11 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
-        console.log('캐시 열림');
+        console.log('새 캐시 열림:', CACHE_NAME);
         return cache.addAll(urlsToCache);
       })
   );
+  // 즉시 새 서비스 워커 활성화
   self.skipWaiting();
 });
 
@@ -28,9 +29,11 @@ self.addEventListener('activate', (event) => {
           }
         })
       );
+    }).then(() => {
+      // 모든 클라이언트에 즉시 새 서비스 워커 적용
+      return self.clients.claim();
     })
   );
-  self.clients.claim();
 });
 
 // 네트워크 요청 가로채기
