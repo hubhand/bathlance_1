@@ -68,6 +68,7 @@ export default function HomePage() {
       
       // 재고가 0인 제품을 자동으로 쇼핑 리스트에 추가
       // shoppingList를 먼저 확인하여 이미 추가된 항목은 건너뛰기
+      // autoAddedToShoppingList도 확인하여 이미 처리된 항목은 건너뛰기
       const alreadyInList = shoppingList.some(item => item.productId === product.id);
       if (product.stock === 0 && !alreadyInList && !autoAddedToShoppingList.has(product.id)) {
         addShoppingListItem({ name: product.name, productId: product.id });
@@ -85,7 +86,8 @@ export default function HomePage() {
 
     localStorage.setItem('notifiedProducts', JSON.stringify(Array.from(notifiedProducts)));
     localStorage.setItem('autoAddedToShoppingList', JSON.stringify(Array.from(autoAddedToShoppingList)));
-  }, [products, shoppingList, addShoppingListItem, isShoppingListLoading]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [products, isShoppingListLoading]);
 
   const handleAddMultipleProducts = useCallback(async (productsToAdd: Omit<Product, 'id'>[]) => {
     try {
