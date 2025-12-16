@@ -28,6 +28,7 @@ export default function HomePage() {
     addDiaryEntry,
     deleteDiaryEntry,
     clearAllMemos,
+    isLoading: isShoppingListLoading,
   } = useMemos();
   const [activeScreen, setActiveScreen] = useState<Screen>('home');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -35,13 +36,19 @@ export default function HomePage() {
   const [productToDelete, setProductToDelete] = useState<string | null>(null);
 
   useEffect(() => {
+    // shoppingList가 아직 로드되지 않았으면 실행하지 않음
+    if (isShoppingListLoading) return;
+    
+    // products가 비어있으면 실행하지 않음
+    if (products.length === 0) return;
+    
     // FIX: Use notification days from localStorage to respect user settings.
     const notificationDays = parseInt(
         localStorage.getItem('bathlance_notification_days') || `${NOTIFICATION_DAYS_BEFORE}`,
         10
     );
-    const notifiedProducts = new Set(JSON.parse(sessionStorage.getItem('notifiedProducts') || '[]'));
-    const autoAddedToShoppingList = new Set(JSON.parse(sessionStorage.getItem('autoAddedToShoppingList') || '[]'));
+    const notifiedProducts = new Set(JSON.parse(localStorage.getItem('notifiedProducts') || '[]'));
+    const autoAddedToShoppingList = new Set(JSON.parse(localStorage.getItem('autoAddedToShoppingList') || '[]'));
     
     products.forEach(product => {
       const daysRemaining = getDaysRemaining(product.expiryDate);
@@ -66,7 +73,8 @@ export default function HomePage() {
         addShoppingListItem({ name: product.name, productId: product.id });
         autoAddedToShoppingList.add(product.id);
         
-        // 구매 목록에 추가됨 알람 후 지금 바로 구매하기 옵션 제공
+        // 이미 쇼핑 리스트에 있는 제품이 아닌 경우에만 모달 표시
+        // (새로 추가된 경우에만 모달 표시)
         const shouldBuy = confirm(`🛒 "${product.name}"이(가) 구매 목록에 추가되었어요!\n\n지금 바로 구매하시겠어요?`);
         if (shouldBuy) {
           const searchQuery = encodeURIComponent(`${product.name} ${product.category}`);
@@ -75,9 +83,9 @@ export default function HomePage() {
       }
     });
 
-    sessionStorage.setItem('notifiedProducts', JSON.stringify(Array.from(notifiedProducts)));
-    sessionStorage.setItem('autoAddedToShoppingList', JSON.stringify(Array.from(autoAddedToShoppingList)));
-  }, [products, shoppingList, addShoppingListItem]);
+    localStorage.setItem('notifiedProducts', JSON.stringify(Array.from(notifiedProducts)));
+    localStorage.setItem('autoAddedToShoppingList', JSON.stringify(Array.from(autoAddedToShoppingList)));
+  }, [products, shoppingList, addShoppingListItem, isShoppingListLoading]);
 
   const handleAddMultipleProducts = useCallback(async (productsToAdd: Omit<Product, 'id'>[]) => {
     try {
