@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bathlance-v2';
+const CACHE_NAME = 'bathlance-v3'; // 캐시 버전 업데이트 (새 서비스 워커 적용을 위해)
 const urlsToCache = [
   '/',
   '/manifest.json',
@@ -46,10 +46,12 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Clerk 인증 요청은 캐시하지 않음
+  // Clerk 인증 요청 및 API 요청은 서비스 워커를 거치지 않고 직접 네트워크로 전달
   if (event.request.url.includes('clerk') || 
       event.request.url.includes('api') ||
       event.request.method !== 'GET') {
+    // 명시적으로 네트워크 요청을 전달하여 서비스 워커가 방해하지 않도록 함
+    event.respondWith(fetch(event.request));
     return;
   }
 

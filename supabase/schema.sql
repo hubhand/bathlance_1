@@ -66,68 +66,102 @@ CREATE INDEX IF NOT EXISTS idx_trouble_history_user_id ON trouble_history(user_i
 CREATE INDEX IF NOT EXISTS idx_trouble_history_user_name ON trouble_history(user_id, product_name);
 
 -- 6. Row Level Security (RLS) 정책 설정
--- 주의: Clerk JWT를 Supabase에서 인증하려면 추가 설정이 필요합니다.
--- 현재는 애플리케이션 레벨에서 user_id로 필터링하므로 RLS를 비활성화합니다.
--- 나중에 Clerk JWT를 Supabase에 통합하면 아래 주석을 해제하고 사용하세요.
+-- ⚠️ 중요: 이 정책들은 Clerk를 Supabase의 third-party auth provider로 설정한 후에만 작동합니다.
+-- Clerk Dashboard에서 Supabase 통합을 활성화하고, Supabase Dashboard에서 Clerk를 third-party auth provider로 추가해야 합니다.
+-- 자세한 내용은 CLERK_SUPABASE_INTEGRATION.md 문서를 참고하세요.
 
--- 모든 테이블에 RLS 활성화 (현재는 비활성화)
--- ALTER TABLE products ENABLE ROW LEVEL SECURITY;
--- ALTER TABLE shopping_list ENABLE ROW LEVEL SECURITY;
--- ALTER TABLE diary_entries ENABLE ROW LEVEL SECURITY;
+-- 모든 테이블에 RLS 활성화
+ALTER TABLE products ENABLE ROW LEVEL SECURITY;
+ALTER TABLE shopping_list ENABLE ROW LEVEL SECURITY;
+ALTER TABLE diary_entries ENABLE ROW LEVEL SECURITY;
+ALTER TABLE trouble_history ENABLE ROW LEVEL SECURITY;
 
 -- 7. RLS 정책: 사용자는 자신의 데이터만 조회/수정/삭제 가능
--- Clerk JWT를 Supabase에 통합한 후 사용할 정책 (현재는 주석 처리)
--- 
+-- Clerk session token의 'sub' 클레임이 user_id와 일치하는 경우에만 접근 허용
+
 -- products 테이블
--- CREATE POLICY "사용자는 자신의 제품만 조회 가능"
---   ON products FOR SELECT
---   USING (auth.jwt() ->> 'sub' = user_id);
---
--- CREATE POLICY "사용자는 자신의 제품만 생성 가능"
---   ON products FOR INSERT
---   WITH CHECK (auth.jwt() ->> 'sub' = user_id);
---
--- CREATE POLICY "사용자는 자신의 제품만 수정 가능"
---   ON products FOR UPDATE
---   USING (auth.jwt() ->> 'sub' = user_id);
---
--- CREATE POLICY "사용자는 자신의 제품만 삭제 가능"
---   ON products FOR DELETE
---   USING (auth.jwt() ->> 'sub' = user_id);
---
+CREATE POLICY "사용자는 자신의 제품만 조회 가능"
+  ON products FOR SELECT
+  TO authenticated
+  USING ((SELECT auth.jwt() ->> 'sub') = user_id);
+
+CREATE POLICY "사용자는 자신의 제품만 생성 가능"
+  ON products FOR INSERT
+  TO authenticated
+  WITH CHECK ((SELECT auth.jwt() ->> 'sub') = user_id);
+
+CREATE POLICY "사용자는 자신의 제품만 수정 가능"
+  ON products FOR UPDATE
+  TO authenticated
+  USING ((SELECT auth.jwt() ->> 'sub') = user_id);
+
+CREATE POLICY "사용자는 자신의 제품만 삭제 가능"
+  ON products FOR DELETE
+  TO authenticated
+  USING ((SELECT auth.jwt() ->> 'sub') = user_id);
+
 -- shopping_list 테이블
--- CREATE POLICY "사용자는 자신의 쇼핑 리스트만 조회 가능"
---   ON shopping_list FOR SELECT
---   USING (auth.jwt() ->> 'sub' = user_id);
---
--- CREATE POLICY "사용자는 자신의 쇼핑 리스트만 생성 가능"
---   ON shopping_list FOR INSERT
---   WITH CHECK (auth.jwt() ->> 'sub' = user_id);
---
--- CREATE POLICY "사용자는 자신의 쇼핑 리스트만 수정 가능"
---   ON shopping_list FOR UPDATE
---   USING (auth.jwt() ->> 'sub' = user_id);
---
--- CREATE POLICY "사용자는 자신의 쇼핑 리스트만 삭제 가능"
---   ON shopping_list FOR DELETE
---   USING (auth.jwt() ->> 'sub' = user_id);
---
+CREATE POLICY "사용자는 자신의 쇼핑 리스트만 조회 가능"
+  ON shopping_list FOR SELECT
+  TO authenticated
+  USING ((SELECT auth.jwt() ->> 'sub') = user_id);
+
+CREATE POLICY "사용자는 자신의 쇼핑 리스트만 생성 가능"
+  ON shopping_list FOR INSERT
+  TO authenticated
+  WITH CHECK ((SELECT auth.jwt() ->> 'sub') = user_id);
+
+CREATE POLICY "사용자는 자신의 쇼핑 리스트만 수정 가능"
+  ON shopping_list FOR UPDATE
+  TO authenticated
+  USING ((SELECT auth.jwt() ->> 'sub') = user_id);
+
+CREATE POLICY "사용자는 자신의 쇼핑 리스트만 삭제 가능"
+  ON shopping_list FOR DELETE
+  TO authenticated
+  USING ((SELECT auth.jwt() ->> 'sub') = user_id);
+
 -- diary_entries 테이블
--- CREATE POLICY "사용자는 자신의 일기만 조회 가능"
---   ON diary_entries FOR SELECT
---   USING (auth.jwt() ->> 'sub' = user_id);
---
--- CREATE POLICY "사용자는 자신의 일기만 생성 가능"
---   ON diary_entries FOR INSERT
---   WITH CHECK (auth.jwt() ->> 'sub' = user_id);
---
--- CREATE POLICY "사용자는 자신의 일기만 수정 가능"
---   ON diary_entries FOR UPDATE
---   USING (auth.jwt() ->> 'sub' = user_id);
---
--- CREATE POLICY "사용자는 자신의 일기만 삭제 가능"
---   ON diary_entries FOR DELETE
---   USING (auth.jwt() ->> 'sub' = user_id);
+CREATE POLICY "사용자는 자신의 일기만 조회 가능"
+  ON diary_entries FOR SELECT
+  TO authenticated
+  USING ((SELECT auth.jwt() ->> 'sub') = user_id);
+
+CREATE POLICY "사용자는 자신의 일기만 생성 가능"
+  ON diary_entries FOR INSERT
+  TO authenticated
+  WITH CHECK ((SELECT auth.jwt() ->> 'sub') = user_id);
+
+CREATE POLICY "사용자는 자신의 일기만 수정 가능"
+  ON diary_entries FOR UPDATE
+  TO authenticated
+  USING ((SELECT auth.jwt() ->> 'sub') = user_id);
+
+CREATE POLICY "사용자는 자신의 일기만 삭제 가능"
+  ON diary_entries FOR DELETE
+  TO authenticated
+  USING ((SELECT auth.jwt() ->> 'sub') = user_id);
+
+-- trouble_history 테이블
+CREATE POLICY "사용자는 자신의 트러블 이력만 조회 가능"
+  ON trouble_history FOR SELECT
+  TO authenticated
+  USING ((SELECT auth.jwt() ->> 'sub') = user_id);
+
+CREATE POLICY "사용자는 자신의 트러블 이력만 생성 가능"
+  ON trouble_history FOR INSERT
+  TO authenticated
+  WITH CHECK ((SELECT auth.jwt() ->> 'sub') = user_id);
+
+CREATE POLICY "사용자는 자신의 트러블 이력만 수정 가능"
+  ON trouble_history FOR UPDATE
+  TO authenticated
+  USING ((SELECT auth.jwt() ->> 'sub') = user_id);
+
+CREATE POLICY "사용자는 자신의 트러블 이력만 삭제 가능"
+  ON trouble_history FOR DELETE
+  TO authenticated
+  USING ((SELECT auth.jwt() ->> 'sub') = user_id);
 
 -- 8. updated_at 자동 업데이트 함수
 CREATE OR REPLACE FUNCTION update_updated_at_column()

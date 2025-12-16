@@ -7,6 +7,7 @@
 ### 설치 완료된 패키지
 
 - `@clerk/nextjs` - Next.js용 Clerk SDK
+- `@clerk/localizations` - Clerk 컴포넌트 다국어 지원 패키지
 
 ### 환경 변수 설정
 
@@ -31,6 +32,7 @@ GEMINI_API_KEY=your_gemini_api_key
 
 2. **ClerkProvider 설정** (`app/layout.tsx`)
    - 앱 전체를 `<ClerkProvider>`로 래핑하여 인증 컨텍스트 제공
+   - 한국어 로케일(`koKR`) 적용으로 모든 Clerk 컴포넌트가 한국어로 표시됨
 
 3. **Header 컴포넌트** (`components/Header.tsx`)
    - 로그인/회원가입 버튼 (미인증 사용자)

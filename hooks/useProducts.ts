@@ -1,19 +1,25 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
-import { useUser } from "@clerk/nextjs";
+import React, { useState, useEffect, useCallback, useRef, useMemo } from "react";
+import { useUser, useSession } from "@clerk/nextjs";
 import { Product } from "../types";
-import { supabase } from "../lib/supabase";
+import { createClient } from "../lib/supabase/client";
 
 export const useProducts = () => {
   const { user, isLoaded } = useUser();
+  const { session } = useSession();
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const deletingProductsRef = useRef<Set<string>>(new Set());
+
+  // Clerk session이 있을 때만 Supabase 클라이언트 생성
+  const supabase = useMemo(() => {
+    return createClient(session);
+  }, [session]);
 
   // Supabase에서 제품 목록 불러오기
   useEffect(() => {
     if (!isLoaded) return;
 
-    if (!user) {
+    if (!user || !session) {
       setProducts([]);
       setIsLoading(false);
       return;
@@ -97,7 +103,7 @@ export const useProducts = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [user, isLoaded]);
+  }, [user, isLoaded, session, supabase]);
 
   const addProduct = useCallback(
     async (product: Omit<Product, "id">) => {
@@ -140,7 +146,7 @@ export const useProducts = () => {
         throw error;
       }
     },
-    [user, products.length]
+    [user, products.length, supabase]
   );
 
   const addMultipleProducts = useCallback(
@@ -184,7 +190,7 @@ export const useProducts = () => {
         throw error;
       }
     },
-    [user, products.length]
+    [user, products.length, supabase]
   );
 
   const updateProduct = useCallback(
@@ -308,7 +314,7 @@ export const useProducts = () => {
         throw error;
       }
     },
-    [user]
+    [user, supabase]
   );
 
   const deleteProduct = useCallback(
@@ -360,7 +366,7 @@ export const useProducts = () => {
         throw error;
       }
     },
-    [user, products]
+    [user, products, supabase]
   );
 
   const reorderProducts = useCallback(
@@ -385,7 +391,7 @@ export const useProducts = () => {
         throw error;
       }
     },
-    [user]
+    [user, supabase]
   );
 
   const clearAllProducts = useCallback(async () => {
@@ -407,7 +413,7 @@ export const useProducts = () => {
       console.error("제품 전체 삭제 중 오류:", error);
       throw error;
     }
-  }, [user]);
+  }, [user, supabase]);
 
   // 🔍 트러블 발생 이력 확인 함수 (트러블 이력 테이블에서 조회)
   const checkTroubleHistory = useCallback(
@@ -451,7 +457,7 @@ export const useProducts = () => {
         return null;
       }
     },
-    [user]
+    [user, supabase]
   );
 
   // 🔍 트러블 발생한 모든 제품 가져오기 (트러블 이력 테이블에서 조회)
@@ -491,7 +497,7 @@ export const useProducts = () => {
       console.error("트러블 제품 조회 중 오류:", error);
       return [];
     }
-  }, [user]);
+  }, [user, supabase]);
 
   // 🔍 트러블 발생 제품들의 공통 성분 찾기
   const findCommonTroubleIngredients = useCallback(async (): Promise<{

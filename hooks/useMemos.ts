@@ -1,10 +1,11 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { useUser } from '@clerk/nextjs';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { useUser, useSession } from '@clerk/nextjs';
 import { ShoppingListItem, DiaryEntry } from '../types';
-import { supabase } from '../lib/supabase';
+import { createClient } from '../lib/supabase/client';
 
 export const useMemos = () => {
   const { user, isLoaded } = useUser();
+  const { session } = useSession();
   const [shoppingList, setShoppingList] = useState<ShoppingListItem[]>([]);
   const [diaryEntries, setDiaryEntries] = useState<DiaryEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -12,11 +13,16 @@ export const useMemos = () => {
   const isAddingDiaryRef = useRef<boolean>(false); // 일기 추가 중인지 추적
   const deletingDiaryEntriesRef = useRef<Set<string>>(new Set()); // 삭제 중인 일기 항목 추적
 
+  // Clerk session이 있을 때만 Supabase 클라이언트 생성
+  const supabase = useMemo(() => {
+    return createClient(session);
+  }, [session]);
+
   // Supabase에서 쇼핑 리스트와 일기 불러오기
   useEffect(() => {
     if (!isLoaded) return;
 
-    if (!user) {
+    if (!user || !session) {
       setShoppingList([]);
       setDiaryEntries([]);
       setIsLoading(false);
@@ -138,7 +144,7 @@ export const useMemos = () => {
       supabase.removeChannel(shoppingChannel);
       supabase.removeChannel(diaryChannel);
     };
-  }, [user, isLoaded]);
+  }, [user, isLoaded, session, supabase]);
 
   // Shopping List functions
   const addShoppingListItem = useCallback(async (item: Omit<ShoppingListItem, 'id' | 'checked'>) => {
@@ -193,7 +199,7 @@ export const useMemos = () => {
       console.error('쇼핑 리스트 추가 중 오류:', error);
       throw error;
     }
-  }, [user]);
+  }, [user, supabase]);
 
   const toggleShoppingListItem = useCallback(async (itemId: string) => {
     if (!user) {
@@ -294,7 +300,7 @@ export const useMemos = () => {
       alert('체크 상태 변경에 실패했어요. 콘솔을 확인해주세요.');
       throw error;
     }
-  }, [user, shoppingList]);
+  }, [user, shoppingList, supabase]);
 
   const deleteShoppingListItem = useCallback(async (itemId: string) => {
     if (!user) {
@@ -341,7 +347,7 @@ export const useMemos = () => {
       console.error('쇼핑 리스트 삭제 중 오류:', error);
       throw error;
     }
-  }, [user, shoppingList]);
+  }, [user, shoppingList, supabase]);
 
   // Diary Entry functions
   const addDiaryEntry = useCallback(async (content: string) => {
@@ -407,7 +413,7 @@ export const useMemos = () => {
       console.error('일기 추가 중 오류:', error);
       throw error;
     }
-  }, [user, diaryEntries.length]);
+  }, [user, diaryEntries.length, supabase]);
 
   const deleteDiaryEntry = useCallback(async (entryId: string) => {
     if (!user) return;
@@ -453,7 +459,7 @@ export const useMemos = () => {
       console.error('일기 삭제 중 오류:', error);
       throw error;
     }
-  }, [user, diaryEntries]);
+  }, [user, diaryEntries, supabase]);
 
   const clearAllMemos = useCallback(async () => {
     if (!user) return;
@@ -483,7 +489,7 @@ export const useMemos = () => {
       console.error('메모 전체 삭제 중 오류:', error);
       throw error;
     }
-  }, [user]);
+  }, [user, supabase]);
 
   return {
     shoppingList,

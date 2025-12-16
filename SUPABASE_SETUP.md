@@ -2,6 +2,8 @@
 
 이 가이드는 BATHLANCE 서비스를 Supabase 데이터베이스와 연동하는 방법을 설명합니다.
 
+> 📚 이 가이드는 [Supabase 공식 Next.js 문서](https://supabase.com/docs/guides/getting-started/quickstarts/nextjs)의 모범 사례를 따릅니다.
+
 ## 📋 목차
 
 1. [Supabase 프로젝트 생성](#1-supabase-프로젝트-생성)
