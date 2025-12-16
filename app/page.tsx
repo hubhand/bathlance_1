@@ -60,26 +60,24 @@ export default function HomePage() {
       }
       
       // 재고가 0인 제품을 자동으로 쇼핑 리스트에 추가
-      if (product.stock === 0 && !autoAddedToShoppingList.has(product.id)) {
-        const alreadyInList = shoppingList.some(item => item.productId === product.id);
-        if (!alreadyInList) {
-          addShoppingListItem({ name: product.name, productId: product.id });
-          autoAddedToShoppingList.add(product.id);
-          
-          // 구매 목록에 추가됨 알람 후 지금 바로 구매하기 옵션 제공
-          const shouldBuy = confirm(`🛒 "${product.name}"이(가) 구매 목록에 추가되었어요!\n\n지금 바로 구매하시겠어요?`);
-          if (shouldBuy) {
-            const searchQuery = encodeURIComponent(`${product.name} ${product.category}`);
-            window.open(`https://search.shopping.naver.com/search/all?query=${searchQuery}&sort=price_asc`, '_blank');
-          }
+      // shoppingList를 먼저 확인하여 이미 추가된 항목은 건너뛰기
+      const alreadyInList = shoppingList.some(item => item.productId === product.id);
+      if (product.stock === 0 && !alreadyInList && !autoAddedToShoppingList.has(product.id)) {
+        addShoppingListItem({ name: product.name, productId: product.id });
+        autoAddedToShoppingList.add(product.id);
+        
+        // 구매 목록에 추가됨 알람 후 지금 바로 구매하기 옵션 제공
+        const shouldBuy = confirm(`🛒 "${product.name}"이(가) 구매 목록에 추가되었어요!\n\n지금 바로 구매하시겠어요?`);
+        if (shouldBuy) {
+          const searchQuery = encodeURIComponent(`${product.name} ${product.category}`);
+          window.open(`https://search.shopping.naver.com/search/all?query=${searchQuery}&sort=price_asc`, '_blank');
         }
       }
     });
 
     sessionStorage.setItem('notifiedProducts', JSON.stringify(Array.from(notifiedProducts)));
     sessionStorage.setItem('autoAddedToShoppingList', JSON.stringify(Array.from(autoAddedToShoppingList)));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [products]);
+  }, [products, shoppingList, addShoppingListItem]);
 
   const handleAddMultipleProducts = useCallback(async (productsToAdd: Omit<Product, 'id'>[]) => {
     try {
