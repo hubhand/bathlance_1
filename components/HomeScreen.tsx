@@ -251,28 +251,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
     currentTouchElement.current = null;
   };
 
-  // 위로 이동 핸들러
-  const handleMoveUp = (index: number) => {
-    if (index === 0) return; // 첫 번째 항목은 위로 이동 불가
-
-    const newProducts = [...products];
-    const [movedItem] = newProducts.splice(index, 1);
-    newProducts.splice(index - 1, 0, movedItem);
-
-    onReorderProducts(newProducts);
-  };
-
-  // 아래로 이동 핸들러
-  const handleMoveDown = (index: number) => {
-    if (index === products.length - 1) return; // 마지막 항목은 아래로 이동 불가
-
-    const newProducts = [...products];
-    const [movedItem] = newProducts.splice(index, 1);
-    newProducts.splice(index + 1, 0, movedItem);
-
-    onReorderProducts(newProducts);
-  };
-
   return (
     <div className="relative p-4 pb-32" onDragOver={handleDragOver}>
       {products.length === 0 ? (
@@ -291,10 +269,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             <h2 className="text-2xl font-bold text-bathlance-orange">
               내 욕실용품 목록 ✨
             </h2>
-            <p className="text-sm text-bathlance-brown/70 flex items-center gap-1">
-              <span>⬆️⬇️</span>
-              <span>왼쪽 화살표 버튼으로 순서 변경 가능!</span>
-            </p>
           </div>
           {products.map((product, index) => (
             <div
@@ -330,10 +304,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                 isOnShoppingList={shoppingList.some(
                   (item) => item.productId === product.id
                 )}
-                onMoveUp={() => handleMoveUp(index)}
-                onMoveDown={() => handleMoveDown(index)}
-                canMoveUp={index > 0}
-                canMoveDown={index < products.length - 1}
               />
             </div>
           ))}

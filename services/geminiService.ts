@@ -12,12 +12,12 @@ let aiInstance: GoogleGenAI | null = null;
 
 const getAI = (): GoogleGenAI => {
   if (!aiInstance) {
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) {
-      throw new Error(
-        "GEMINI_API_KEY 환경 변수가 설정되지 않았습니다. .env.local 파일에 GEMINI_API_KEY를 추가해주세요."
-      );
-    }
+const apiKey = process.env.GEMINI_API_KEY;
+if (!apiKey) {
+  throw new Error(
+    "GEMINI_API_KEY 환경 변수가 설정되지 않았습니다. .env.local 파일에 GEMINI_API_KEY를 추가해주세요."
+  );
+}
     aiInstance = new GoogleGenAI({ apiKey });
   }
   return aiInstance;

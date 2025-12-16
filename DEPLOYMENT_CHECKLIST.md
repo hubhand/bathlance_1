@@ -143,3 +143,4 @@ Vercel 프로젝트 > Settings > Environment Variables에서 추가:
 2. Supabase 대시보드에서 테이블 존재 확인
 3. RLS (Row Level Security) 정책 확인
 
+

@@ -5,8 +5,6 @@ import { EditIcon } from "./icons/EditIcon";
 import { TrashIcon } from "./icons/TrashIcon";
 import { ShoppingCartIcon } from "./icons/ShoppingCartIcon";
 import { ReplaceIcon } from "./icons/ReplaceIcon";
-import { ArrowUpIcon } from "./icons/ArrowUpIcon";
-import { ArrowDownIcon } from "./icons/ArrowDownIcon";
 import { ShoppingLinks } from "./ShoppingLinks";
 
 interface ProductCardProps {
@@ -16,10 +14,6 @@ interface ProductCardProps {
   onToggleShoppingList: (product: Product) => void;
   onReplace: (productId: string) => void;
   isOnShoppingList: boolean;
-  onMoveUp?: () => void;
-  onMoveDown?: () => void;
-  canMoveUp?: boolean;
-  canMoveDown?: boolean;
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({
@@ -29,10 +23,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   onToggleShoppingList,
   onReplace,
   isOnShoppingList,
-  onMoveUp,
-  onMoveDown,
-  canMoveUp = false,
-  canMoveDown = false,
 }) => {
   const [showShoppingLinks, setShowShoppingLinks] = useState(false);
   const daysRemaining = getDaysRemaining(product.expiryDate);
@@ -61,65 +51,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
   return (
     <div className="bg-gradient-to-br from-white to-bathlance-cream/30 rounded-cute shadow-cute p-4 mb-4 relative flex items-stretch border border-bathlance-cream/50 hover:shadow-cute-lg transition-all duration-300">
-      {/* 왼쪽에 화살표 버튼 배치 */}
-      <div className="flex flex-col items-center justify-center pr-2 gap-0.5 z-10 relative">
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            e.preventDefault();
-            if (canMoveUp) {
-              onMoveUp?.();
-            }
-          }}
-          onTouchStart={(e) => {
-            e.stopPropagation();
-          }}
-          onTouchEnd={(e) => {
-            e.stopPropagation();
-            if (canMoveUp) {
-              onMoveUp?.();
-            }
-          }}
-          disabled={!canMoveUp}
-          className={`p-1 rounded transition-colors relative z-20 ${
-            canMoveUp
-              ? "text-bathlance-orange hover:bg-bathlance-orange/20 cursor-pointer"
-              : "text-gray-300 cursor-not-allowed"
-          }`}
-          style={{ pointerEvents: "auto" }}
-          title="위로 이동"
-        >
-          <ArrowUpIcon className="w-5 h-5" />
-        </button>
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            e.preventDefault();
-            if (canMoveDown) {
-              onMoveDown?.();
-            }
-          }}
-          onTouchStart={(e) => {
-            e.stopPropagation();
-          }}
-          onTouchEnd={(e) => {
-            e.stopPropagation();
-            if (canMoveDown) {
-              onMoveDown?.();
-            }
-          }}
-          disabled={!canMoveDown}
-          className={`p-1 rounded transition-colors relative z-20 ${
-            canMoveDown
-              ? "text-bathlance-orange hover:bg-bathlance-orange/20 cursor-pointer"
-              : "text-gray-300 cursor-not-allowed"
-          }`}
-          style={{ pointerEvents: "auto" }}
-          title="아래로 이동"
-        >
-          <ArrowDownIcon className="w-5 h-5" />
-        </button>
-      </div>
       <div className="flex-1 flex flex-col">
         <div className="flex items-start space-x-4">
           <img
