@@ -240,7 +240,7 @@ export const EditProductScreen: React.FC<EditProductScreenProps> = ({
             className="w-24 h-24 sm:w-32 sm:h-32 object-cover rounded-lg mx-auto border-2 sm:border-4 border-white shadow-lg"
           />
         </div>
-        <div>
+        <div className="w-full">
           <label
             htmlFor="name"
             className="block text-sm sm:text-md font-bold text-gray-600 mb-1"
@@ -253,10 +253,10 @@ export const EditProductScreen: React.FC<EditProductScreenProps> = ({
             name="name"
             value={formData.name}
             onChange={handleChange}
-            className="block w-full box-border px-3 sm:px-4 py-2 sm:py-3 bg-white border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-bathlance-orange focus:border-bathlance-orange text-sm sm:text-base"
+            className="block w-full min-w-0 box-border px-3 sm:px-4 py-2 sm:py-3 bg-white border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-bathlance-orange focus:border-bathlance-orange text-sm sm:text-base"
           />
         </div>
-        <div>
+        <div className="w-full">
           <label
             htmlFor="category"
             className="block text-sm sm:text-md font-bold text-gray-600 mb-1"
@@ -268,7 +268,7 @@ export const EditProductScreen: React.FC<EditProductScreenProps> = ({
             name="category"
             value={formData.category}
             onChange={handleCategoryChange}
-            className="block w-full box-border px-3 sm:px-4 py-2 sm:py-3 bg-white border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-bathlance-orange focus:border-bathlance-orange text-sm sm:text-base"
+            className="block w-full min-w-0 box-border px-3 sm:px-4 py-2 sm:py-3 bg-white border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-bathlance-orange focus:border-bathlance-orange text-sm sm:text-base"
           >
             {Object.keys(AVERAGE_USAGE_PERIODS).map((cat) => (
               <option key={cat} value={cat}>
@@ -277,7 +277,7 @@ export const EditProductScreen: React.FC<EditProductScreenProps> = ({
             ))}
           </select>
         </div>
-        <div>
+        <div className="w-full">
           <label
             htmlFor="periodAfterOpening"
             className="block text-sm sm:text-md font-bold text-gray-600 mb-1"
@@ -291,10 +291,10 @@ export const EditProductScreen: React.FC<EditProductScreenProps> = ({
             value={formData.periodAfterOpening || ""}
             onChange={handleChange}
             placeholder="예: 12 (AI가 자동 입력해요)"
-            className="block w-full box-border px-3 sm:px-4 py-2 sm:py-3 bg-white border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-bathlance-orange focus:border-bathlance-orange text-sm sm:text-base"
+            className="block w-full min-w-0 box-border px-3 sm:px-4 py-2 sm:py-3 bg-white border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-bathlance-orange focus:border-bathlance-orange text-sm sm:text-base"
           />
         </div>
-        <div>
+        <div className="w-full">
           <label
             htmlFor="manufacturingDate"
             className="block text-sm sm:text-md font-bold text-gray-600 mb-1"
@@ -311,10 +311,10 @@ export const EditProductScreen: React.FC<EditProductScreenProps> = ({
                 : ""
             }
             onChange={handleChange}
-            className="block w-full box-border px-3 sm:px-4 py-2 sm:py-3 bg-white border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-bathlance-orange focus:border-bathlance-orange text-sm sm:text-base"
+            className="block w-full min-w-0 box-border px-3 sm:px-4 py-2 sm:py-3 bg-white border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-bathlance-orange focus:border-bathlance-orange text-sm sm:text-base"
           />
         </div>
-        <div>
+        <div className="w-full">
           <label
             htmlFor="expiryPeriodBeforeOpening"
             className="block text-sm sm:text-md font-bold text-gray-600 mb-1"
@@ -328,10 +328,10 @@ export const EditProductScreen: React.FC<EditProductScreenProps> = ({
             value={formData.expiryPeriodBeforeOpening || ""}
             onChange={handleChange}
             placeholder="예: 36 (제조일로부터)"
-            className="block w-full box-border px-3 sm:px-4 py-2 sm:py-3 bg-white border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-bathlance-orange focus:border-bathlance-orange text-sm sm:text-base"
+            className="block w-full min-w-0 box-border px-3 sm:px-4 py-2 sm:py-3 bg-white border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-bathlance-orange focus:border-bathlance-orange text-sm sm:text-base"
           />
         </div>
-        <div>
+        <div className="w-full">
           <label
             htmlFor="stock"
             className="block text-sm sm:text-md font-bold text-gray-600 mb-1"
@@ -351,10 +351,10 @@ export const EditProductScreen: React.FC<EditProductScreenProps> = ({
             min="0"
             max="50"
             placeholder="1"
-            className="block w-full box-border px-3 sm:px-4 py-2 sm:py-3 bg-white border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-bathlance-orange focus:border-bathlance-orange text-sm sm:text-base"
+            className="block w-full min-w-0 box-border px-3 sm:px-4 py-2 sm:py-3 bg-white border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-bathlance-orange focus:border-bathlance-orange text-sm sm:text-base"
           />
         </div>
-        <div>
+        <div className="w-full">
           <label
             htmlFor="registrationDate"
             className="block text-sm sm:text-md font-bold text-gray-600 mb-1"
@@ -367,10 +367,10 @@ export const EditProductScreen: React.FC<EditProductScreenProps> = ({
             name="registrationDate"
             value={formatDate(formData.registrationDate)}
             onChange={handleChange}
-            className="block w-full box-border px-3 sm:px-4 py-2 sm:py-3 bg-white border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-bathlance-orange focus:border-bathlance-orange text-sm sm:text-base"
+            className="block w-full min-w-0 box-border px-3 sm:px-4 py-2 sm:py-3 bg-white border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-bathlance-orange focus:border-bathlance-orange text-sm sm:text-base"
           />
         </div>
-        <div>
+        <div className="w-full">
           <label
             htmlFor="expiryDate"
             className="block text-sm sm:text-md font-bold text-gray-600 mb-1"
@@ -383,7 +383,7 @@ export const EditProductScreen: React.FC<EditProductScreenProps> = ({
             name="expiryDate"
             value={formatDate(formData.expiryDate)}
             readOnly
-            className="block w-full box-border px-3 sm:px-4 py-2 sm:py-3 bg-gray-100 border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-bathlance-orange focus:border-bathlance-orange cursor-not-allowed text-sm sm:text-base"
+            className="block w-full min-w-0 box-border px-3 sm:px-4 py-2 sm:py-3 bg-gray-100 border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-bathlance-orange focus:border-bathlance-orange cursor-not-allowed text-sm sm:text-base"
           />
         </div>
 
@@ -457,10 +457,10 @@ export const EditProductScreen: React.FC<EditProductScreenProps> = ({
           )}
         </div>
 
-        <div>
+        <div className="w-full">
           <label
             htmlFor="review"
-            className="block text-md font-bold text-gray-600 mb-1"
+            className="block text-sm sm:text-md font-bold text-gray-600 mb-1"
           >
             간단 후기 📝
           </label>
@@ -471,7 +471,7 @@ export const EditProductScreen: React.FC<EditProductScreenProps> = ({
             onChange={handleChange}
             rows={3}
             placeholder="제품 사용 후기를 간단하게 남겨보세요. (예: 향이 좋았어요!)"
-            className="block w-full box-border px-3 sm:px-4 py-2 sm:py-3 bg-white border border-gray-300 rounded-2xl shadow-sm focus:outline-none focus:ring-bathlance-orange focus:border-bathlance-orange text-sm sm:text-base"
+            className="block w-full min-w-0 box-border px-3 sm:px-4 py-2 sm:py-3 bg-white border border-gray-300 rounded-2xl shadow-sm focus:outline-none focus:ring-bathlance-orange focus:border-bathlance-orange text-sm sm:text-base resize-none"
           />
         </div>
 
