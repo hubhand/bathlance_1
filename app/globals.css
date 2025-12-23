@@ -57,3 +57,40 @@ input[type="number"]::-webkit-outer-spin-button {
   position: relative !important;
 }
 
+/* 커스텀 스크롤바 스타일 */
+.custom-scrollbar {
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: #e1621c #f3f4f6; /* thumb color, track color */
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px; /* Chrome, Edge, Safari */
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f3f4f6;
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #e1621c;
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #c5510f;
+}
+
+/* 빨간색 스크롤바 (공통 성분 분석용) */
+.custom-scrollbar-red {
+  scrollbar-color: #f87171 #f3f4f6; /* thumb color, track color */
+}
+
+.custom-scrollbar-red::-webkit-scrollbar-thumb {
+  background: #f87171;
+}
+
+.custom-scrollbar-red::-webkit-scrollbar-thumb:hover {
+  background: #ef4444;
+}
+

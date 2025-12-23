@@ -289,7 +289,7 @@ export const EditProductScreen: React.FC<EditProductScreenProps> = ({ product, o
         <div className="pt-2">
             <h3 className="text-md font-bold text-gray-600 mb-2 flex items-center">AI 성분 분석 🔬 <span className="text-xs font-normal text-gray-500 ml-2">(제품 뒷면 사진 필요)</span></h3>
             {formData.ingredientAnalysis && formData.ingredientAnalysis.length > 0 ? (
-                <div className="bg-white border border-gray-200 rounded-2xl p-4 space-y-2 max-h-60 overflow-y-auto">
+                <div className="bg-white border border-gray-200 rounded-2xl p-4 space-y-2 max-h-60 overflow-y-scroll custom-scrollbar">
                 {formData.ingredientAnalysis.map((ing, index) => (
                     <div key={index} className="flex justify-between items-center text-sm p-2 rounded-lg hover:bg-gray-50">
                         <div className="flex-1 mr-2">

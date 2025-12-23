@@ -133,10 +133,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                 } rounded-cute p-2 shadow-sm`}
               >
                 <p className="text-xs font-bold text-bathlance-brown">
-                  남은 재고
+                  재고
                 </p>
                 {isOutOfStock ? (
-                  <p className="text-xl font-bold text-red-600">재고 없음</p>
+                  <p className="text-xl font-bold text-red-600">없음</p>
                 ) : (
                   <p className="text-2xl font-bold text-bathlance-orange">
                     {stockCount}개
@@ -220,35 +220,35 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           </div>
         )}
 
-        <div className="absolute top-2 right-2 flex space-x-1">
+        <div className="absolute top-2 right-2 flex space-x-2">
           <button
             onClick={() => onToggleShoppingList(product)}
             onTouchStart={(e) => e.stopPropagation()}
             onTouchEnd={(e) => e.stopPropagation()}
-            className={`p-1 rounded-full transition-colors ${
+            className={`p-2 rounded-full transition-colors ${
               isOnShoppingList
                 ? "text-white bg-bathlance-orange"
                 : "text-gray-400 hover:text-bathlance-orange"
             }`}
             title={isOnShoppingList ? "구매 목록에서 제거" : "구매 목록에 추가"}
           >
-            <ShoppingCartIcon className="w-5 h-5" />
+            <ShoppingCartIcon className="w-6 h-6" />
           </button>
           <button
             onClick={() => onEdit(product)}
             onTouchStart={(e) => e.stopPropagation()}
             onTouchEnd={(e) => e.stopPropagation()}
-            className="text-gray-400 hover:text-blue-600 p-1 rounded-full transition-colors"
+            className="text-gray-400 hover:text-blue-600 p-2 rounded-full transition-colors"
           >
-            <EditIcon className="w-5 h-5" />
+            <EditIcon className="w-6 h-6" />
           </button>
           <button
             onClick={() => onDelete(product.id)}
             onTouchStart={(e) => e.stopPropagation()}
             onTouchEnd={(e) => e.stopPropagation()}
-            className="text-gray-400 hover:text-red-600 p-1 rounded-full transition-colors"
+            className="text-gray-400 hover:text-red-600 p-2 rounded-full transition-colors"
           >
-            <TrashIcon className="w-5 h-5" />
+            <TrashIcon className="w-6 h-6" />
           </button>
         </div>
       </div>

@@ -98,7 +98,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ onClearAllData }
                                         <p className="text-sm font-bold text-red-700 mb-2">
                                             {troubleProducts.length}개의 트러블 제품에서 발견된 공통 성분:
                                         </p>
-                                        <div className="space-y-2 max-h-60 overflow-y-auto">
+                                        <div className="space-y-2 max-h-60 overflow-y-scroll custom-scrollbar custom-scrollbar-red">
                                             {commonIngredients.map((ingredient, idx) => (
                                                 <div key={idx} className="bg-white p-3 rounded-lg border border-red-200">
                                                     <div className="flex justify-between items-start mb-1">
