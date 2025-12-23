@@ -8,7 +8,7 @@ export const Header: React.FC = () => {
       <div className="flex items-center justify-between mb-1">
         <div className="flex-1"></div>
         <h1 className="text-2xl font-bold text-bathlance-orange drop-shadow-sm flex-1">
-        🛁 BATHLANCE <span className="hidden sm:inline">(배슬랜스)</span>
+        BATHLANCE <span className="hidden sm:inline">(배슬랜스)</span>
       </h1>
         <div className="flex-1 flex justify-end items-center gap-2">
           <SignedOut>
