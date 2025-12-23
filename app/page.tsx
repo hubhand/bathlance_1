@@ -286,7 +286,7 @@ export default function HomePage() {
       <PWARegister />
       <Header />
       <SignedIn>
-        <main className="pb-24">
+        <main className="pb-16">
           {renderScreen()}
         </main>
         <BottomNav activeScreen={activeScreen} setScreen={setActiveScreen} />
