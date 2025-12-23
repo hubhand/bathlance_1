@@ -18,7 +18,7 @@
  * ```
  */
 
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { createClient as createSupabaseClient, SupabaseClient } from '@supabase/supabase-js';
 import { auth } from '@clerk/nextjs/server';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -42,7 +42,7 @@ export async function createClient(): Promise<SupabaseClient> {
   const { getToken } = await auth();
   const token = await getToken();
 
-  return createClient(supabaseUrl, supabaseAnonKey, {
+  return createSupabaseClient(supabaseUrl, supabaseAnonKey, {
     global: {
       fetch: async (url, options = {}) => {
         // Authorization 헤더에 Clerk token 추가

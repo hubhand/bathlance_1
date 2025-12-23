@@ -15,7 +15,8 @@
     "@supabase/supabase-js": "^2.87.1",
     "next": "15.5.7",
     "react": "^19.2.3",
-    "react-dom": "^19.2.3"
+    "react-dom": "^19.2.3",
+    "테스트3_bathlance-(배슬랜스)": "link:"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.17",

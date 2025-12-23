@@ -39,8 +39,12 @@ export function PWARegister() {
         if (navigator.serviceWorker.controller) {
           navigator.serviceWorker.controller.addEventListener(
             "message",
-            (event) => {
-              if (event.data && event.data.type === "SKIP_WAITING") {
+            (event: Event) => {
+              const messageEvent = event as MessageEvent;
+              if (
+                messageEvent.data &&
+                messageEvent.data.type === "SKIP_WAITING"
+              ) {
                 window.location.reload();
               }
             }

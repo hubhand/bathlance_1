@@ -30,7 +30,9 @@
 'use client';
 
 import { createClient as createSupabaseClient, SupabaseClient } from '@supabase/supabase-js';
-import type { Session } from '@clerk/nextjs';
+
+// Clerk session 타입 정의 (getToken 메서드를 가진 객체)
+type ClerkSession = { getToken: () => Promise<string | null> } | null | undefined;
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
@@ -49,7 +51,7 @@ if (!supabaseUrl || !supabaseAnonKey) {
  * @param session - Clerk session 객체 (useSession() hook에서 가져온 값)
  * @returns Supabase 클라이언트 인스턴스
  */
-export function createClient(session: Session | null): SupabaseClient {
+export function createClient(session: ClerkSession): SupabaseClient {
   return createSupabaseClient(supabaseUrl, supabaseAnonKey, {
     global: {
       fetch: async (url, options = {}) => {
