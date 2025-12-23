@@ -185,21 +185,21 @@ export const EditProductScreen: React.FC<EditProductScreenProps> = ({ product, o
   };
 
   return (
-    <div className="p-4">
-      <h2 className="text-2xl font-bold text-gray-700 mb-6 text-center">제품 정보 수정하기 ✏️</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
+    <div className="p-2 sm:p-4 max-w-full overflow-x-hidden">
+      <h2 className="text-xl sm:text-2xl font-bold text-gray-700 mb-4 sm:mb-6 text-center">제품 정보 수정하기 ✏️</h2>
+      <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
         <div className="text-center">
-            <img src={formData.imageUrl} alt={formData.name} className="w-32 h-32 object-cover rounded-lg mx-auto border-4 border-white shadow-lg"/>
+            <img src={formData.imageUrl} alt={formData.name} className="w-24 h-24 sm:w-32 sm:h-32 object-cover rounded-lg mx-auto border-2 sm:border-4 border-white shadow-lg"/>
         </div>
         <div>
-          <label htmlFor="name" className="block text-md font-bold text-gray-600 mb-1">제품 이름</label>
+          <label htmlFor="name" className="block text-sm sm:text-md font-bold text-gray-600 mb-1">제품 이름</label>
           <input
             type="text"
             id="name"
             name="name"
             value={formData.name}
             onChange={handleChange}
-            className="block w-full px-4 py-3 bg-white border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-bathlance-orange focus:border-bathlance-orange"
+            className="block w-full px-3 sm:px-4 py-2 sm:py-3 bg-white border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-bathlance-orange focus:border-bathlance-orange text-sm sm:text-base"
           />
         </div>
         <div>
@@ -209,7 +209,7 @@ export const EditProductScreen: React.FC<EditProductScreenProps> = ({ product, o
             name="category"
             value={formData.category}
             onChange={handleCategoryChange}
-            className="block w-full px-4 py-3 bg-white border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-bathlance-orange focus:border-bathlance-orange"
+            className="block w-full px-3 sm:px-4 py-2 sm:py-3 bg-white border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-bathlance-orange focus:border-bathlance-orange text-sm sm:text-base"
           >
             {Object.keys(AVERAGE_USAGE_PERIODS).map(cat => <option key={cat} value={cat}>{cat}</option>)}
           </select>
@@ -223,7 +223,7 @@ export const EditProductScreen: React.FC<EditProductScreenProps> = ({ product, o
             value={formData.periodAfterOpening || ''}
             onChange={handleChange}
             placeholder="예: 12 (AI가 자동 입력해요)"
-            className="block w-full px-4 py-3 bg-white border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-bathlance-orange focus:border-bathlance-orange"
+            className="block w-full px-3 sm:px-4 py-2 sm:py-3 bg-white border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-bathlance-orange focus:border-bathlance-orange text-sm sm:text-base"
           />
         </div>
         <div>
@@ -234,7 +234,7 @@ export const EditProductScreen: React.FC<EditProductScreenProps> = ({ product, o
             name="manufacturingDate"
             value={formData.manufacturingDate ? formatDate(formData.manufacturingDate) : ''}
             onChange={handleChange}
-            className="block w-full px-4 py-3 bg-white border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-bathlance-orange focus:border-bathlance-orange"
+            className="block w-full px-3 sm:px-4 py-2 sm:py-3 bg-white border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-bathlance-orange focus:border-bathlance-orange text-sm sm:text-base"
           />
         </div>
         <div>
@@ -246,7 +246,7 @@ export const EditProductScreen: React.FC<EditProductScreenProps> = ({ product, o
             value={formData.expiryPeriodBeforeOpening || ''}
             onChange={handleChange}
             placeholder="예: 36 (제조일로부터)"
-            className="block w-full px-4 py-3 bg-white border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-bathlance-orange focus:border-bathlance-orange"
+            className="block w-full px-3 sm:px-4 py-2 sm:py-3 bg-white border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-bathlance-orange focus:border-bathlance-orange text-sm sm:text-base"
           />
         </div>
          <div>
@@ -260,7 +260,7 @@ export const EditProductScreen: React.FC<EditProductScreenProps> = ({ product, o
             min="0"
             max="50"
             placeholder="1"
-            className="block w-full px-4 py-3 bg-white border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-bathlance-orange focus:border-bathlance-orange"
+            className="block w-full px-3 sm:px-4 py-2 sm:py-3 bg-white border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-bathlance-orange focus:border-bathlance-orange text-sm sm:text-base"
           />
         </div>
         <div>
@@ -271,7 +271,7 @@ export const EditProductScreen: React.FC<EditProductScreenProps> = ({ product, o
             name="registrationDate"
             value={formatDate(formData.registrationDate)}
             onChange={handleChange}
-            className="block w-full px-4 py-3 bg-white border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-bathlance-orange focus:border-bathlance-orange"
+            className="block w-full px-3 sm:px-4 py-2 sm:py-3 bg-white border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-bathlance-orange focus:border-bathlance-orange text-sm sm:text-base"
           />
         </div>
         <div>
@@ -282,7 +282,7 @@ export const EditProductScreen: React.FC<EditProductScreenProps> = ({ product, o
             name="expiryDate"
             value={formatDate(formData.expiryDate)}
             readOnly
-            className="block w-full px-4 py-3 bg-gray-100 border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-bathlance-orange focus:border-bathlance-orange cursor-not-allowed"
+            className="block w-full px-3 sm:px-4 py-2 sm:py-3 bg-gray-100 border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-bathlance-orange focus:border-bathlance-orange cursor-not-allowed text-sm sm:text-base"
           />
         </div>
 
@@ -338,7 +338,7 @@ export const EditProductScreen: React.FC<EditProductScreenProps> = ({ product, o
             onChange={handleChange}
             rows={3}
             placeholder="제품 사용 후기를 간단하게 남겨보세요. (예: 향이 좋았어요!)"
-            className="block w-full px-4 py-3 bg-white border border-gray-300 rounded-2xl shadow-sm focus:outline-none focus:ring-bathlance-orange focus:border-bathlance-orange"
+            className="block w-full px-3 sm:px-4 py-2 sm:py-3 bg-white border border-gray-300 rounded-2xl shadow-sm focus:outline-none focus:ring-bathlance-orange focus:border-bathlance-orange text-sm sm:text-base"
           />
         </div>
 
@@ -356,9 +356,9 @@ export const EditProductScreen: React.FC<EditProductScreenProps> = ({ product, o
             className="h-6 w-6 text-red-600 border-gray-300 rounded focus:ring-red-500 cursor-pointer"
           />
         </div>
-        <div className="flex space-x-4 pt-4">
-          <button type="button" onClick={onCancel} className="w-1/2 bg-gray-300 text-gray-800 font-bold py-3 px-4 rounded-full shadow-md hover:bg-gray-400 transition-colors">취소</button>
-          <button type="submit" className="w-1/2 bg-bathlance-orange text-white font-bold py-3 px-4 rounded-full shadow-lg hover:bg-orange-600 transition-colors">저장하기</button>
+        <div className="flex space-x-2 sm:space-x-4 pt-3 sm:pt-4">
+          <button type="button" onClick={onCancel} className="w-1/2 bg-gray-300 text-gray-800 font-bold py-2 sm:py-3 px-3 sm:px-4 rounded-full shadow-md hover:bg-gray-400 transition-colors text-sm sm:text-base">취소</button>
+          <button type="submit" className="w-1/2 bg-bathlance-orange text-white font-bold py-2 sm:py-3 px-3 sm:px-4 rounded-full shadow-lg hover:bg-orange-600 transition-colors text-sm sm:text-base">저장하기</button>
         </div>
       </form>
     </div>

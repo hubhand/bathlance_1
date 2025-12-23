@@ -1,10 +1,11 @@
+'use client';
 
 import React from 'react';
 import { SignInButton, SignUpButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
 
 export const Header: React.FC = () => {
   return (
-    <header className="bg-gradient-to-r from-bathlance-cream via-bathlance-cream/90 to-bathlance-cream backdrop-blur-sm py-2 px-3 text-center sticky top-0 z-10 shadow-cute border-b-2 border-bathlance-orange/20">
+    <header className="bg-[#f7e0a4] backdrop-blur-sm py-2 px-3 text-center sticky top-0 z-10 shadow-cute border-b-2 border-bathlance-orange/20">
       <div className="flex items-center justify-between mb-1">
         <div className="flex-1"></div>
         <h1 className="text-2xl font-bold text-bathlance-orange drop-shadow-sm flex-1">
@@ -34,7 +35,7 @@ export const Header: React.FC = () => {
           </SignedIn>
         </div>
       </div>
-      <p className="text-xs text-bathlance-brown font-medium">소중한 내 욕실용품 교체 알리미 ✨</p>
+      <p className="text-xs text-bathlance-brown font-medium">소중한 내 욕실용품 교체 알리미 <span className="text-[#e1621c]">✨</span></p>
     </header>
   );
 };
