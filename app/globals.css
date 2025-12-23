@@ -1,5 +1,20 @@
 @import "tailwindcss";
 
+/* 충북대학교 70주년 기념 폰트 추가 */
+@font-face {
+    font-family: 'ChungbukNationalUniversity70thAnniversary';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/ChungbukNationalUniversity-Regular.woff') format('woff');
+    font-weight: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'ChungbukNationalUniversity70thAnniversary';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/ChungbukNationalUniversity-Bold.woff') format('woff');
+    font-weight: 700;
+    font-display: swap;
+}
+
 @theme {
   --color-bathlance-orange: #e1621c;
   --color-bathlance-cream: #f7e0a4;
@@ -12,7 +27,7 @@
   --shadow-cute: 0 4px 12px rgba(225, 98, 28, 0.15);
   --shadow-cute-lg: 0 8px 24px rgba(225, 98, 28, 0.2);
   
-  --font-family-gaegu: 'Gaegu', cursive;
+  --font-family-gaegu: 'ChungbukNationalUniversity70thAnniversary', sans-serif;
 }
 
 body {

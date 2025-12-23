@@ -16,7 +16,7 @@ const config: Config = {
         'bathlance-gray': '#dfdcd2',
       },
       fontFamily: {
-        'gaegu': ['Gaegu', 'cursive'],
+        'gaegu': ['ChungbukNationalUniversity70thAnniversary', 'sans-serif'],
       },
       borderRadius: {
         'cute': '1.5rem',

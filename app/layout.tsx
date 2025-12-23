@@ -35,30 +35,26 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   const publishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
-  
+
   if (!publishableKey) {
-    throw new Error('NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY is missing');
+    throw new Error("NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY is missing");
   }
 
   return (
     <ClerkProvider publishableKey={publishableKey} localization={koKR}>
       <html lang="ko">
         <head>
-          <link rel="preconnect" href="https://fonts.googleapis.com" />
-          <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-          <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&display=swap" rel="stylesheet" />
           <link rel="apple-touch-icon" href="/icons/icon-192x192.svg" />
           <meta name="apple-mobile-web-app-capable" content="yes" />
-          <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+          <meta
+            name="apple-mobile-web-app-status-bar-style"
+            content="default"
+          />
           <meta name="apple-mobile-web-app-title" content="배슬랜스" />
           <meta name="mobile-web-app-capable" content="yes" />
         </head>
-        <body className="font-gaegu">
-          {children}
-        </body>
+        <body className="font-gaegu">{children}</body>
       </html>
     </ClerkProvider>
   );
 }
-
-
