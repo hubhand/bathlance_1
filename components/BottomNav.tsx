@@ -17,18 +17,18 @@ export const BottomNav: React.FC<BottomNavProps> = ({ activeScreen, setScreen })
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-bathlance-cream/95 via-bathlance-cream/90 to-bathlance-cream/85 backdrop-blur-sm shadow-cute-lg border-t-2 border-bathlance-orange/20 py-1.5 px-2 flex justify-around items-center rounded-t-cute">
+    <nav className="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-bathlance-cream/95 via-bathlance-cream/90 to-bathlance-cream/85 backdrop-blur-sm shadow-cute-lg border-t-2 border-bathlance-orange/20 py-1 px-2 flex justify-around items-center rounded-t-cute">
       {navItems.map(({ screen, icon: Icon, label }) => (
         <button
           key={screen}
           onClick={() => setScreen(screen)}
-          className={`flex flex-col items-center justify-center p-2 rounded-cute transition-all duration-300 ${
+          className={`flex flex-col items-center justify-center p-1.5 rounded-cute transition-all duration-300 ${
             activeScreen === screen
               ? 'text-bathlance-orange bg-white/60 shadow-cute scale-110'
               : 'text-bathlance-brown/60 hover:text-bathlance-orange hover:bg-white/40'
           }`}
         >
-          <Icon className="w-6 h-6" />
+          <Icon className="w-5 h-5" />
           <span className={`text-[10px] mt-0.5 font-bold ${activeScreen === screen ? 'opacity-100' : 'opacity-0'} transition-opacity`}>{label}</span>
         </button>
       ))}
