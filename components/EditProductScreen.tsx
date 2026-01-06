@@ -185,23 +185,24 @@ export const EditProductScreen: React.FC<EditProductScreenProps> = ({
     }
   };
 
-  const getEwgClass = (grade: string): string => {
-    if (
-      grade.toLowerCase().includes("주의") ||
-      grade.toLowerCase().includes("caution")
-    ) {
-      return "bg-red-100 text-red-800 border border-red-200";
-    }
-    const match = grade.match(/(\d+)/);
-    if (match) {
-      const gradeNum = parseInt(match[1], 10);
-      if (gradeNum >= 7) return "bg-red-100 text-red-800 border border-red-200";
-      if (gradeNum >= 3)
-        return "bg-yellow-100 text-yellow-800 border border-yellow-200";
-      if (gradeNum >= 1)
+  const getSafetyClass = (
+    grade?: "안전" | "보통" | "주의" | "위험"
+  ): string => {
+    // grade가 undefined이거나 null인 경우 기본값 "보통" 사용
+    const safeGrade = grade || "보통";
+
+    switch (safeGrade) {
+      case "안전":
         return "bg-green-100 text-green-800 border border-green-200";
+      case "보통":
+        return "bg-blue-100 text-blue-800 border border-blue-200";
+      case "주의":
+        return "bg-yellow-100 text-yellow-800 border border-yellow-200";
+      case "위험":
+        return "bg-red-100 text-red-800 border border-red-200";
+      default:
+        return "bg-gray-100 text-gray-800 border border-gray-200";
     }
-    return "bg-gray-100 text-gray-800 border border-gray-200";
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -400,29 +401,41 @@ export const EditProductScreen: React.FC<EditProductScreenProps> = ({
               {formData.ingredientAnalysis.map((ing, index) => (
                 <div
                   key={index}
-                  className="flex justify-between items-center text-sm p-2 rounded-lg hover:bg-gray-50"
+                  className="text-sm p-3 rounded-lg hover:bg-gray-50 border-b border-gray-100 last:border-b-0"
                 >
-                  <div className="flex-1 mr-2">
-                    <p className="font-bold text-gray-700">{ing.name}</p>
+                  <div className="mb-2">
+                    <p className="font-bold text-gray-800 text-base mb-1">
+                      {ing.name}
+                    </p>
                     {ing.description && (
-                      <p className="text-xs text-gray-500 mt-1">
+                      <p className="text-sm text-gray-600 leading-relaxed">
                         {ing.description}
                       </p>
                     )}
                   </div>
-                  <div className="flex items-center space-x-2 flex-shrink-0">
+                  <div className="flex items-center space-x-2 flex-wrap gap-1.5 mt-2">
+                    <span
+                      className={`text-xs font-bold px-2 py-1 rounded-full ${getSafetyClass(
+                        ing.safetyGrade
+                      )}`}
+                    >
+                      안전성 {ing.safetyGrade || "보통"}
+                    </span>
+                    {ing.isProhibited && (
+                      <span className="text-xs font-bold text-red-700 bg-red-200 px-2 py-0.5 rounded-full border border-red-300">
+                        금지 성분
+                      </span>
+                    )}
+                    {ing.hasLimitation && !ing.isProhibited && (
+                      <span className="text-xs font-bold text-orange-600 bg-orange-100 px-2 py-0.5 rounded-full border border-orange-200">
+                        사용 제한
+                      </span>
+                    )}
                     {ing.isAllergen && (
                       <span className="text-xs font-bold text-red-600 bg-red-100 px-2 py-0.5 rounded-full border border-red-200">
                         알러지주의
                       </span>
                     )}
-                    <span
-                      className={`text-xs font-bold px-2 py-1 rounded-full ${getEwgClass(
-                        ing.ewgGrade
-                      )}`}
-                    >
-                      EWG {ing.ewgGrade}
-                    </span>
                   </div>
                 </div>
               ))}

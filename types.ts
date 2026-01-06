@@ -2,9 +2,13 @@ export type ProductCategory = '칫솔' | '샴푸' | '린스' | '세안제' | '�
 
 export interface Ingredient {
   name: string;
-  ewgGrade: string; // e.g., '1', '2', '3-6', 'Caution'
+  safetyGrade: "안전" | "보통" | "주의" | "위험"; // 자체 안전성 평가 등급
   isAllergen: boolean;
   description?: string;
+  // 규제정보 (공공데이터 API에서 제공)
+  isProhibited?: boolean;      // 금지 여부
+  hasLimitation?: boolean;     // 제한 여부
+  limitationInfo?: string;     // 제한 정보
 }
 
 export interface Product {
